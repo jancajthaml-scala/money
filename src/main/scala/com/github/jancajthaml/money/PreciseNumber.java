@@ -176,7 +176,7 @@ class PreciseNumber implements Cloneable {
         maxnw = precisionToSize(precision);
         mantissa = new float[maxnw];
 
-        dmc(new Chunk(ia), this);
+        dmc(new Chunk(ia, 0), this);
     }
 
     PreciseNumber(String str) {
@@ -307,18 +307,18 @@ class PreciseNumber implements Cloneable {
         if (a.sign == false) throw new ArithmeticException("mpcbrt: argument is negative --> " + a);
 
         int nws = lnw;
-        Chunk t1 = new Chunk();
-        t1.a = lnw;
-        int mq = (int)(CL2 * Math.log(t1.a) + 1.0 - 5.6843418860808015e-14); // *cast*
+        Chunk t1 = new Chunk(0, 0);
+        t1.sa(lnw);
+        int mq = (int)(CL2 * Math.log(t1.ga()) + 1.0 - 5.6843418860808015e-14); // *cast*
 
         lnw++;
 
         mul(a, a, sk0, lnw);
         mdc(a, t1);
 
-        Chunk t2 = new Chunk();
-        t2.n = -(t1.n << 1) / 3;
-        t2.a = Math.pow((t1.a * Math.pow(2.0, (t1.n + 3.0 * t2.n / 2.0))), (-2.0 / 3.0));
+        Chunk t2 = new Chunk(0, 0);
+        t2.sn(-(t1.gn() << 1) / 3);
+        t2.sa(Math.pow((t1.ga() * Math.pow(2.0, (t1.gn() + 3.0 * t2.gn() / 2.0))), (-2.0 / 3.0)));
 
         dmc(t2, b);
 
@@ -345,7 +345,7 @@ class PreciseNumber implements Cloneable {
                 lnw = nw1;
 
                 mul(b, sk2, sk1, lnw);
-                mpdivd(sk1, new Chunk(3.0), sk2, lnw);
+                mpdivd(sk1, new Chunk(3.0, 0), sk2, lnw);
 
                 lnw = nw2;
 
@@ -370,7 +370,7 @@ class PreciseNumber implements Cloneable {
         lnw = nw1;
 
         mul(sk1, b, sk2, lnw);
-        mpdivd(sk2, new Chunk(3.0), sk1, lnw);
+        mpdivd(sk2, new Chunk(3.0, 0), sk1, lnw);
 
         lnw = nw2;
 
@@ -544,19 +544,19 @@ class PreciseNumber implements Cloneable {
         double t1 = 0.0;
         PreciseNumber f = new PreciseNumber(6, false);
         int na = Math.min(a.number_words, lnw);
-        int ib = (int)(fSign(1.0, b.a));
+        int ib = (int)(fSign(1.0, b.ga()));
 
         if (na == 0) {
             zero(c);
             return;
         }
 
-        if (b.a == 0.0)
+        if (b.ga() == 0.0)
             throw new ArithmeticException("mpdivd: Divisor is zero");
 
-        int n1 = b.n / 24;
-        int n2 = b.n - 24 * n1;
-        bb = Math.abs(b.a) * Math.pow(2.0, n2);
+        int n1 = b.gn() / 24;
+        int n2 = b.gn() - 24 * n1;
+        bb = Math.abs(b.ga()) * Math.pow(2.0, n2);
 
         if (bb >= 1.6777216e7) {
             for (k = 1; k <= 100; k++) {
@@ -579,7 +579,7 @@ class PreciseNumber implements Cloneable {
         }
 
         if (bb != (int)(bb)) {
-            dmc(new Chunk(fSign(bb, b.a), n1 * 24), f);
+            dmc(new Chunk(fSign(bb, b.ga()), n1 * 24), f);
             mpdiv(a, f, c, lnw);
             return;
         }
@@ -619,14 +619,14 @@ class PreciseNumber implements Cloneable {
         int k = 0;
         double aa = 0.0;
 
-        if (a.a == 0.0) {
+        if (a.ga() == 0.0) {
             zero(b);
             return;
         }
 
-        int n1 = a.n / 24;
-        int n2 = a.n - 24 * n1;
-        aa = Math.abs(a.a) * Math.pow(2.0, n2);
+        int n1 = a.gn() / 24;
+        int n2 = a.gn() - 24 * n1;
+        aa = Math.abs(a.ga()) * Math.pow(2.0, n2);
 
         if (aa >= 1.6777216e7) {
             for (k = 1; k <= 100; k++) {
@@ -661,7 +661,7 @@ class PreciseNumber implements Cloneable {
             if (b.mantissa[i] != 0.0) break;
 
         aa = i + 1;
-        b.sign = (a.a >= 0);
+        b.sign = (a.ga() >= 0);
         b.number_words = (int)(aa);
     }
 
@@ -733,8 +733,8 @@ class PreciseNumber implements Cloneable {
         boolean isAZero = false;
 
         if (a.number_words == 0) {
-            b.a = 0.0;
-            b.n = 0;
+            b.sa(0.0);
+            b.sn(0);
             isAZero = true;
         }
 
@@ -746,8 +746,8 @@ class PreciseNumber implements Cloneable {
             if (na >= 3) aa += 3.552713678800501e-15 * a.mantissa[2];
             if (na >= 4) aa += 5.9604644775390625e-8 * 3.552713678800501e-15 * a.mantissa[3];
 
-            b.n = 24 * a.exponent;
-            b.a = fSign(aa, a.sign ? 1.0 : -1.0);
+            b.sn(24 * a.exponent);
+            b.sa(fSign(aa, a.sign ? 1.0 : -1.0));
         }
     }
 
@@ -829,16 +829,16 @@ class PreciseNumber implements Cloneable {
         double bb = 0.0;
         PreciseNumber f = new PreciseNumber(6, false);
         int na = Math.min(a.number_words, lnw);
-        int ib = (int)(fSign(1.0, b.a));
+        int ib = (int)(fSign(1.0, b.ga()));
 
-        if (na == 0 || b.a == 0.0) {
+        if (na == 0 || b.ga() == 0.0) {
             zero(c);
             return;
         }
 
-        int n1 = b.n / 24;
-        int n2 = b.n - 24 * n1;
-        bb = Math.abs(b.a) * Math.pow(2.0, n2);
+        int n1 = b.gn() / 24;
+        int n2 = b.gn() - 24 * n1;
+        bb = Math.abs(b.ga()) * Math.pow(2.0, n2);
 
         if (bb >= 1.6777216e7) {
             for (k = 1; k <= 100; k++) {
@@ -861,7 +861,7 @@ class PreciseNumber implements Cloneable {
         }
 
         if (bb != (int)(bb)) {
-            dmc(new Chunk(fSign(bb, b.a), n1 * 24), f);
+            dmc(new Chunk(fSign(bb, b.ga()), n1 * 24), f);
             mul(f, a, c, lnw);
             return;
         }
@@ -1130,9 +1130,9 @@ class PreciseNumber implements Cloneable {
         f1.exponent = 0;
         f1.mantissa[0] = 1;
         f1.mantissa[1] = 0;
-        Chunk t1 = new Chunk();
-        t1.a = lnw;
-        int mq = (int)(CL2 * Math.log(t1.a) + 1.0 - 5.6843418860808015e-14);
+        Chunk t1 = new Chunk(0, 0);
+        t1.sa(lnw);
+        int mq = (int)(CL2 * Math.log(t1.ga()) + 1.0 - 5.6843418860808015e-14);
 
         sub(a, f1, sk0, lnw);
 
@@ -1143,33 +1143,33 @@ class PreciseNumber implements Cloneable {
 
         mdc(sk0, t1);
 
-        int n2 = (int)(CL2 * Math.log(Math.abs(t1.a)));
-        t1.a *= Math.pow(0.5, n2);
-        t1.n += n2;
+        int n2 = (int)(CL2 * Math.log(Math.abs(t1.ga())));
+        t1.sa(t1.ga() * Math.pow(0.5, n2));
+        t1.sn(t1.gn() + n2);
 
-        if (t1.n <= -30) {
+        if (t1.gn() <= -30) {
             t2 = n;
             n2 = (int)(CL2 * Math.log(t2) + 1.0 + 5.6843418860808015e-14);
-            int n3 = -24 * lnw / t1.n;
+            int n3 = -24 * lnw / t1.gn();
 
             if (n3 < 1.25 * n2) {
                 lnw++;
 
-                mpdivd(sk0, new Chunk(t2), sk1, lnw);
+                mpdivd(sk0, new Chunk(t2, 0), sk1, lnw);
                 add(f1, sk1, sk2, lnw);
 
                 k = 0;
-                int temp = t1.n;
-                t1.n = 0;
+                int temp = t1.gn();
+                t1.sn(0);
 
                 do {
                     k++;
 
-                    t1.a = 1 - k * n;
+                    t1.sa(1 - k * n);
                     t2 = (k + 1) * n;
 
                     muld(sk1, t1, sk3, lnw);
-                    mpdivd(sk3, new Chunk(t2), sk1, lnw);
+                    mpdivd(sk3, new Chunk(t2, 0), sk1, lnw);
                     mul(sk0, sk1, sk3, lnw);
                     eq(sk3, sk1, lnw);
                     add(sk1, sk2, sk3, lnw);
@@ -1177,7 +1177,7 @@ class PreciseNumber implements Cloneable {
                 }
                 while (sk1.number_words != 0 && sk1.exponent >= -lnw);
 
-                t1.n = temp;
+                t1.sn(temp);
 
                 eq(sk2, b, lnw);
                 mpdiv(f1, sk2, sk0, lnw);
@@ -1191,9 +1191,9 @@ class PreciseNumber implements Cloneable {
 
         mdc(a, t1);
 
-        Chunk dp1 = new Chunk();
-        dp1.n = (int)(-t1.n / tn);
-        dp1.a = Math.exp(-1.0 / tn * (Math.log(t1.a) + (t1.n + tn * dp1.n) * ALT));
+        Chunk dp1 = new Chunk(0, 0);
+        dp1.sn((int)(-t1.gn() / tn));
+        dp1.sa(Math.exp(-1.0 / tn * (Math.log(t1.ga()) + (t1.gn() + tn * dp1.gn()) * ALT)));
 
         dmc(dp1, b);
         dmc(dpn, f2);
@@ -1210,7 +1210,7 @@ class PreciseNumber implements Cloneable {
                 mul(a, sk0, sk1, lnw);
                 sub(f1, sk1, sk0, lnw);
                 mul(b, sk0, sk1, lnw);
-                mpdivd(sk1, new Chunk(tn), sk0, lnw);
+                mpdivd(sk1, new Chunk(tn, 0), sk0, lnw);
                 add(b, sk0, sk1, lnw);
                 eq(sk1, b, lnw);
 
@@ -1359,15 +1359,15 @@ class PreciseNumber implements Cloneable {
 
         int nws = lnw;
         Chunk t1 = new Chunk(lnw, 0);
-        int mq = (int)(CL2 * Math.log(t1.a) + 1.0 - 5.6843418860808015e-14); // *cast* 
+        int mq = (int)(CL2 * Math.log(t1.ga()) + 1.0 - 5.6843418860808015e-14); // *cast* 
         int iq = 0;
 
         mdc(a, t1);
 
-        Chunk dp1 = new Chunk();
-        dp1.n = -t1.n >> 1;
-        t2 = Math.sqrt(t1.a * Math.pow(2.0, (t1.n + (dp1.n << 1))));
-        dp1.a = 1.0 / t2;
+        Chunk dp1 = new Chunk(0, 0);
+        dp1.sn(-t1.gn() >> 1);
+        t2 = Math.sqrt(t1.ga() * Math.pow(2.0, (t1.gn() + (dp1.gn() << 1))));
+        dp1.sa(1.0 / t2);
 
         dmc(dp1, b);
 
@@ -1393,7 +1393,7 @@ class PreciseNumber implements Cloneable {
                 sub(f, sk1, sk0, lnw);
                 lnw = nw1;
                 mul(b, sk0, sk1, lnw);
-                muld(sk1, new Chunk(0.50), sk0, lnw);
+                muld(sk1, new Chunk(0.50, 0), sk0, lnw);
                 lnw = nw2;
                 add(b, sk0, sk1, lnw);
                 eq(sk1, b, lnw);
@@ -1415,7 +1415,7 @@ class PreciseNumber implements Cloneable {
         lnw = nw1;
 
         mul(sk2, b, sk1, lnw);
-        muld(sk1, new Chunk(0.50), sk2, lnw);
+        muld(sk1, new Chunk(0.50, 0), sk2, lnw);
 
         lnw = nw2;
 
@@ -1587,7 +1587,7 @@ class PreciseNumber implements Cloneable {
                         ca[ib] = '\0';
                         bi = Integer.parseInt(new String(ca, 0, ib));
 
-                        muld(sk2, new Chunk(1e6), sk0, lnw);
+                        muld(sk2, new Chunk(1e6, 0), sk0, lnw);
 
                         if (bi != 0) {
                             f.number_words = 1;
@@ -1672,12 +1672,12 @@ class PreciseNumber implements Cloneable {
                 if (sk1.exponent < 0) {
                     nx = nx - 1;
 
-                    muld(sk1, new Chunk(10.0), sk0, lnw);
+                    muld(sk1, new Chunk(10.0, 0), sk0, lnw);
                     eq(sk0, sk1, lnw);
                 } else if (sk1.mantissa[0] >= 10) {
                     nx++;
 
-                    mpdivd(sk1, new Chunk(10.0), sk0, lnw);
+                    mpdivd(sk1, new Chunk(10.0, 0), sk0, lnw);
                     eq(sk0, sk1, lnw);
                 } else cont = false;
             }
@@ -1719,7 +1719,7 @@ class PreciseNumber implements Cloneable {
             return ix;
         }
 
-        muld(sk0, new Chunk(1e6), sk1, lnw);
+        muld(sk0, new Chunk(1e6, 0), sk1, lnw);
 
         int nl = (int)(Math.max(lnw * log10(1.6777216e7) / 6.0 - 1.0, 1.0));
         boolean skip = false;
@@ -1748,7 +1748,7 @@ class PreciseNumber implements Cloneable {
             ix += 6;
 
             sub(sk1, f, sk0, lnw);
-            muld(sk0, new Chunk(1e6), sk1, lnw);
+            muld(sk0, new Chunk(1e6, 0), sk1, lnw);
 
             if (sk1.number_words == 0) {
                 skip = true;
@@ -1872,15 +1872,15 @@ class PreciseNumber implements Cloneable {
         if (nx == 0 && ny == 0)
             throw new ArithmeticException("mpang: Both arguments are zero.");
 
-        Chunk t1 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
 
         mdc(pi, t1);
 
-        if (t1.n != 0 || Math.abs(t1.a - CPI) > 3.552713678800501e-15)
+        if (t1.gn() != 0 || Math.abs(t1.ga() - CPI) > 3.552713678800501e-15)
             throw new ArithmeticException("mpang: PI must be precomputed");
 
         if (nx == 0) {
-            muld(pi, new Chunk((iy > 0) ? 0.5 : -0.5), a, lnw);
+            muld(pi, new Chunk((iy > 0) ? 0.5 : -0.5, 0), a, lnw);
             return;
         } else if (ny == 0) {
             if (ix > 0) zero(a);
@@ -1892,8 +1892,8 @@ class PreciseNumber implements Cloneable {
 
         lnw++;
 
-        t1.a = nws;
-        int mq = (int)(CL2 * Math.log(t1.a) + 1.0 - 5.6843418860808015e-14);
+        t1.sa(nws);
+        int mq = (int)(CL2 * Math.log(t1.ga()) + 1.0 - 5.6843418860808015e-14);
 
         mul(x, x, sk0, lnw);
         mul(y, y, sk1, lnw);
@@ -1903,22 +1903,22 @@ class PreciseNumber implements Cloneable {
         mpdiv(y, sk3, sk2, lnw);
         mdc(sk1, t1);
 
-        Chunk t2 = new Chunk();
+        Chunk t2 = new Chunk(0, 0);
 
         mdc(sk2, t2);
 
-        t1.n = Math.max(t1.n, -66);
-        t2.n = Math.max(t2.n, -66);
-        t1.a = t1.a * Math.pow(2.0, t1.n);
-        t2.a = t2.a * Math.pow(2.0, t2.n);
-        Chunk t3 = new Chunk();
-        t3.a = Math.atan2(t2.a, t1.a);
+        t1.sn(Math.max(t1.gn(), -66));
+        t2.sn(Math.max(t2.gn(), -66));
+        t1.sa(t1.ga() * Math.pow(2.0, t1.gn()));
+        t2.sa(t2.ga() * Math.pow(2.0, t2.gn()));
+        Chunk t3 = new Chunk(0, 0);
+        t3.sa(Math.atan2(t2.ga(), t1.ga()));
 
         dmc(t3, a);
 
         int kk;
 
-        if (Math.abs(t1.a) <= Math.abs(t2.a)) {
+        if (Math.abs(t1.ga()) <= Math.abs(t2.ga())) {
             kk = 1;
             eq(sk1, sk0, lnw);
         } else {
@@ -1973,10 +1973,10 @@ class PreciseNumber implements Cloneable {
         mpexp(a, al2, sk0, lnw);
         mpdiv(f, sk0, sk1, lnw);
         add(sk0, sk1, sk2, lnw);
-        muld(sk2, new Chunk(0.5), sk3, lnw);
+        muld(sk2, new Chunk(0.5, 0), sk3, lnw);
         eq(sk3, x, lnw);
         sub(sk0, sk1, sk2, lnw);
-        muld(sk2, new Chunk(0.5), sk3, lnw);
+        muld(sk2, new Chunk(0.5, 0), sk3, lnw);
         eq(sk3, y, lnw);
         round(x, nws);
         round(y, nws);
@@ -2008,11 +2008,11 @@ class PreciseNumber implements Cloneable {
             return;
         }
 
-        Chunk t1 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
 
         mdc(pi, t1);
 
-        if (t1.n != 0 || Math.abs(t1.a - CPI) > 3.552713678800501e-15)
+        if (t1.gn() != 0 || Math.abs(t1.ga() - CPI) > 3.552713678800501e-15)
             throw new ArithmeticException("mpccsn: pi must be precomputed.");
 
         int nws = lnw;
@@ -2025,7 +2025,7 @@ class PreciseNumber implements Cloneable {
         f.mantissa[0] = 1;
         f.mantissa[1] = 0;
 
-        muld(pi, new Chunk(2.0), sk0, lnw);
+        muld(pi, new Chunk(2.0, 0), sk0, lnw);
         mpdiv(a, sk0, sk1, lnw);
         nint(sk1, sk2, lnw);
         sub(sk1, sk2, sk3, lnw);
@@ -2034,9 +2034,9 @@ class PreciseNumber implements Cloneable {
         int ka = 0;
         int kb = 0;
 
-        if (t1.n >= -24) {
-            t1.a *= Math.pow(2.0, t1.n);
-            t2 = 4.0 * t1.a;
+        if (t1.gn() >= -24) {
+            t1.sa(t1.ga() * Math.pow(2.0, t1.gn()));
+            t2 = 4.0 * t1.ga();
             ka = (int)(nint(t2));
             kb = (int)(nint(8.0 * (t2 - ka)));
         } else {
@@ -2044,8 +2044,8 @@ class PreciseNumber implements Cloneable {
             kb = 0;
         }
 
-        t1.a = ((ka << 3) + kb) / 32.0;
-        t1.n = 0;
+        t1.sa(((ka << 3) + kb) / 32.0);
+        t1.sn(0);
 
         dmc(t1, sk1);
         sub(sk3, sk1, sk2, lnw);
@@ -2069,7 +2069,7 @@ class PreciseNumber implements Cloneable {
                 t2 = -(2.0 * l1) * (2.0 * l1 + 1.0);
 
                 mul(sk2, sk1, sk3, lnw);
-                mpdivd(sk3, new Chunk(t2), sk1, lnw);
+                mpdivd(sk3, new Chunk(t2, 0), sk1, lnw);
                 add(sk1, sk0, sk3, lnw);
                 eq(sk3, sk0, lnw);
             }
@@ -2117,10 +2117,10 @@ class PreciseNumber implements Cloneable {
 
             add(f, sk4, sk5, lnw);
             mpsqrt(sk5, sk3, lnw);
-            muld(sk3, new Chunk(0.5), sk2, lnw);
+            muld(sk3, new Chunk(0.5, 0), sk2, lnw);
             sub(f, sk4, sk5, lnw);
             mpsqrt(sk5, sk4, lnw);
-            muld(sk4, new Chunk(0.5), sk3, lnw);
+            muld(sk4, new Chunk(0.5, 0), sk3, lnw);
         }
 
         if (kb < 0) sk3.sign = !sk3.sign;
@@ -2173,23 +2173,23 @@ class PreciseNumber implements Cloneable {
         PreciseNumber sk1 = new PreciseNumber(nw3, false);
         PreciseNumber sk2 = new PreciseNumber(nw3, false);
         PreciseNumber sk3 = new PreciseNumber(nw3, false);
-        Chunk t1 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
 
         mdc(a, t1);
 
-        t1.a = t1.value();
-        Chunk t2 = new Chunk();
+        t1.sa(t1.value());
+        Chunk t2 = new Chunk(0, 0);
 
-        if (Math.abs(t1.a - ALT) > 5.9604644775390625e-8) {
+        if (Math.abs(t1.ga() - ALT) > 5.9604644775390625e-8) {
             mdc(al2, t2);
 
-            if (t2.n != -24 || Math.abs(t2.a * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
+            if (t2.gn() != -24 || Math.abs(t2.ga() * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
                 throw new ArithmeticException("mpexp: LOG (2) must be precomputed.");
         }
 
-        if (t1.a >= 1e9) {
-            if (t1.a > 0.0)
-                throw new ArithmeticException("MPEXP: Argument is too large --> " + t1.a + " x 10 ^" + t1.n);
+        if (t1.ga() >= 1e9) {
+            if (t1.ga() > 0.0)
+                throw new ArithmeticException("MPEXP: Argument is too large --> " + t1.ga() + " x 10 ^" + t1.gn());
             else {
                 zero(b);
                 l1 = 0;
@@ -2208,12 +2208,12 @@ class PreciseNumber implements Cloneable {
         f.mantissa[1] = 0;
         int nz = 0;
 
-        if (Math.abs(t1.a - ALT) > 5.9604644775390625e-8) {
+        if (Math.abs(t1.ga() - ALT) > 5.9604644775390625e-8) {
             mpdiv(a, al2, sk0, lnw);
             nint(sk0, sk1, lnw);
             mdc(sk1, t1);
 
-            nz = (int)(t1.value() + fSign(5.6843418860808015e-14, t1.a));
+            nz = (int)(t1.value() + fSign(5.6843418860808015e-14, t1.ga()));
 
             mul(al2, sk1, sk2, lnw);
             sub(a, sk2, sk0, lnw);
@@ -2240,7 +2240,7 @@ class PreciseNumber implements Cloneable {
             eq(f, sk3, lnw);
 
             l1 = 0;
-            t2.n = 0;
+            t2.sn(0);
 
             do {
                 l1 = l1 + 1;
@@ -2248,7 +2248,7 @@ class PreciseNumber implements Cloneable {
                 if (l1 == 10000)
                     throw new ArithmeticException("mpexp: Iteration limit exceeded.");
 
-                t2.a = l1;
+                t2.sa(l1);
 
                 mul(sk2, sk1, sk0, lnw);
                 mpdivd(sk0, t2, sk2, lnw);
@@ -2279,15 +2279,15 @@ class PreciseNumber implements Cloneable {
         if (a.sign == false || na == 0)
             throw new ArithmeticException("log: Argument is less than or equal to zero -->" + a);
 
-        Chunk t1 = new Chunk();
-        Chunk t2 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
+        Chunk t2 = new Chunk(0, 0);
 
         mdc(a, t1);
 
-        if (Math.abs(t1.a - 2.0) > 1e-3 || t1.n != 0) {
+        if (Math.abs(t1.ga() - 2.0) > 1e-3 || t1.gn() != 0) {
             mdc(al2, t2);
 
-            if (t2.n != -24 || Math.abs(t2.a * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
+            if (t2.gn() != -24 || Math.abs(t2.ga() * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
                 throw new ArithmeticException("log: LOG (2) must be precomputed.");
         }
 
@@ -2299,10 +2299,10 @@ class PreciseNumber implements Cloneable {
         }
 
         int nws = lnw;
-        t2.a = nws;
-        int mq = (int)(CL2 * Math.log(t2.a) + 1.0 - 5.6843418860808015e-14);
-        t1.a = Math.log(t1.a) + t1.n * ALT;
-        t1.n = 0;
+        t2.sa(nws);
+        int mq = (int)(CL2 * Math.log(t2.ga()) + 1.0 - 5.6843418860808015e-14);
+        t1.sa(Math.log(t1.ga()) + t1.gn() * ALT);
+        t1.sn(0);
 
         dmc(t1, b);
 
@@ -2355,7 +2355,7 @@ class PreciseNumber implements Cloneable {
         f.mantissa[1] = 0;
 
         mpsqrt(f, sk2, lnw);
-        muld(sk2, new Chunk(0.50), sk1, lnw);
+        muld(sk2, new Chunk(0.50, 0), sk1, lnw);
 
         f.exponent = -1;
         f.mantissa[0] = (float)(0.50 * 1.6777216e7);
@@ -2366,13 +2366,13 @@ class PreciseNumber implements Cloneable {
             add(sk0, sk1, sk2, lnw);
             mul(sk0, sk1, sk3, lnw);
             mpsqrt(sk3, sk1, lnw);
-            muld(sk2, new Chunk(0.50), sk0, lnw);
+            muld(sk2, new Chunk(0.50, 0), sk0, lnw);
             sub(sk0, sk1, sk2, lnw);
             mul(sk2, sk2, sk3, lnw);
 
             t1 = Math.pow(2.0, k);
 
-            muld(sk3, new Chunk(t1), sk2, lnw);
+            muld(sk3, new Chunk(t1, 0), sk2, lnw);
             sub(sk4, sk2, sk3, lnw);
             eq(sk3, sk4, lnw);
         }
@@ -2836,7 +2836,7 @@ class PreciseNumber implements Cloneable {
                 lnw = nw1;
 
                 _mul(b, sk2, sk1, lnw);
-                mpdivd(sk1, new Chunk(3.0), sk2, lnw);
+                mpdivd(sk1, new Chunk(3.0, 0), sk2, lnw);
 
                 lnw = nw2;
 
@@ -2861,7 +2861,7 @@ class PreciseNumber implements Cloneable {
         lnw = nw1;
 
         _mul(sk1, b, sk2, lnw);
-        mpdivd(sk2, new Chunk(3.0), sk1, lnw);
+        mpdivd(sk2, new Chunk(3.0, 0), sk1, lnw);
 
         lnw = nw2;
 
@@ -3144,9 +3144,9 @@ class PreciseNumber implements Cloneable {
         f1.exponent = 0;
         f1.mantissa[0] = 1;
         f1.mantissa[1] = 0;
-        Chunk t1 = new Chunk();
-        t1.a = lnw;
-        int mq = (int)(CL2 * Math.log(t1.a) + 1.0 - 5.6843418860808015e-14);
+        Chunk t1 = new Chunk(0, 0);
+        t1.sa(lnw);
+        int mq = (int)(CL2 * Math.log(t1.ga()) + 1.0 - 5.6843418860808015e-14);
 
         sub(a, f1, sk0, lnw);
 
@@ -3157,17 +3157,17 @@ class PreciseNumber implements Cloneable {
 
         mdc(sk0, t1);
 
-        int n2 = (int)(CL2 * Math.log(Math.abs(t1.a)));
-        t1.a *= Math.pow(0.5, n2);
-        t1.n += n2;
+        int n2 = (int)(CL2 * Math.log(Math.abs(t1.ga())));
+        t1.sa(t1.ga() * Math.pow(0.5, n2));
+        t1.sn(t1.gn() + n2);
 
-        if (t1.n <= -30) {
+        if (t1.gn() <= -30) {
             t2 = n;
             n2 = (int)(CL2 * Math.log(t2) + 1.0 + 5.6843418860808015e-14);
-            int n3 = -24 * lnw / t1.n;
+            int n3 = -24 * lnw / t1.gn();
 
             if (n3 < 1.25 * n2) {
-                mpdivd(sk0, new Chunk(t2), sk1, lnw);
+                mpdivd(sk0, new Chunk(t2, 0), sk1, lnw);
                 add(f1, sk1, sk2, lnw);
 
                 k = 0;
@@ -3175,11 +3175,11 @@ class PreciseNumber implements Cloneable {
                 do {
                     k++;
 
-                    t1.a = 1 - k * n;
+                    t1.sa(1 - k * n);
                     t2 = (k + 1) * n;
 
-                    muld(sk1, new Chunk(t1.a), sk3, lnw);
-                    mpdivd(sk3, new Chunk(t2), sk1, lnw);
+                    muld(sk1, new Chunk(t1.ga(), 0), sk3, lnw);
+                    mpdivd(sk3, new Chunk(t2, 0), sk1, lnw);
                     _mul(sk0, sk1, sk3, lnw);
                     eq(sk3, sk1, lnw);
                     add(sk1, sk2, sk3, lnw);
@@ -3222,7 +3222,7 @@ class PreciseNumber implements Cloneable {
                 lnw = nw1;
 
                 _mul(b, sk0, sk1, lnw);
-                mpdivd(sk1, new Chunk(tn), sk0, lnw);
+                mpdivd(sk1, new Chunk(tn, 0), sk0, lnw);
 
                 lnw = nw2;
 
@@ -3293,7 +3293,7 @@ class PreciseNumber implements Cloneable {
                 lnw = nw1;
 
                 _mul(b, sk0, sk1, lnw);
-                muld(sk1, new Chunk(0.50), sk0, lnw);
+                muld(sk1, new Chunk(0.50, 0), sk0, lnw);
 
                 lnw = nw2;
 
@@ -3317,7 +3317,7 @@ class PreciseNumber implements Cloneable {
         lnw = nw1;
 
         _mul(sk2, b, sk1, lnw);
-        muld(sk1, new Chunk(0.50), sk2, lnw);
+        muld(sk1, new Chunk(0.50, 0), sk2, lnw);
 
         lnw = nw2;
 
@@ -3419,32 +3419,32 @@ class PreciseNumber implements Cloneable {
         PreciseNumber sk1 = new PreciseNumber(nw2, false);
         PreciseNumber sk2 = new PreciseNumber(nw2, false);
         int ncr = (int)(Math.pow(2, pointer));
-        Chunk t1 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
 
         mdc(a, t1);
 
-        t1.a *= Math.pow(2.0, t1.n);
+        t1.sa(t1.ga() * Math.pow(2.0, t1.gn()));
 
         if (lnw <= ncr) {
             mpexp(a, al2, b, lnw);
             return;
         }
 
-        Chunk t2 = new Chunk();
+        Chunk t2 = new Chunk(0, 0);
 
         mdc(al2, t2);
 
-        if (t2.n != -24 || Math.abs(t2.a * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
+        if (t2.gn() != -24 || Math.abs(t2.ga() * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
             throw new ArithmeticException("_exp: LOG(2) must be precomputed.");
 
         mdc(pi, t2);
 
-        if (t2.n != 0 || Math.abs(t2.a - Math.PI) > 3.552713678800501e-15)
+        if (t2.gn() != 0 || Math.abs(t2.ga() - Math.PI) > 3.552713678800501e-15)
             throw new ArithmeticException("_exp: PI must be precomputed.");
 
-        if (t1.a >= 1e9) {
-            if (t1.a > 0.0)
-                throw new ArithmeticException("_exp: Argument is too large --> " + t1.a + " x 10 ^" + t1.n);
+        if (t1.ga() >= 1e9) {
+            if (t1.ga() > 0.0)
+                throw new ArithmeticException("_exp: Argument is too large --> " + t1.ga() + " x 10 ^" + t1.gn());
             else {
                 zero(b);
                 return;
@@ -3457,8 +3457,8 @@ class PreciseNumber implements Cloneable {
         f1.exponent = 0;
         f1.mantissa[0] = 1;
         f1.mantissa[1] = 0;
-        t2.a = nws;
-        int mq = (int)(CL2 * Math.log(t2.a) + 1.0 - 5.6843418860808015e-14);
+        t2.sa(nws);
+        int mq = (int)(CL2 * Math.log(t2.ga()) + 1.0 - 5.6843418860808015e-14);
 
         add(a, f1, sk0, lnw);
 
@@ -3506,14 +3506,14 @@ class PreciseNumber implements Cloneable {
         if (!a.sign || na == 0)
             throw new ArithmeticException("_log: Argument is less than or equal to zero -->" + a);
 
-        Chunk t1 = new Chunk();
+        Chunk t1 = new Chunk(0, 0);
 
         mdc(pi, t1);
 
-        if (t1.n != 0 || Math.abs(t1.a - CPI) > 3.552713678800501e-15)
+        if (t1.gn() != 0 || Math.abs(t1.ga() - CPI) > 3.552713678800501e-15)
             throw new ArithmeticException("_log: PI must be precomputed.");
 
-        Chunk t2 = new Chunk();
+        Chunk t2 = new Chunk(0, 0);
         int it2 = 0;
 
         if (a.number_words != 1 || a.exponent != 0 || a.mantissa[0] != 2 || !a.sign) {
@@ -3521,7 +3521,7 @@ class PreciseNumber implements Cloneable {
 
             mdc(al2, t2);
 
-            if (t2.n != -24 || Math.abs(t2.a * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
+            if (t2.gn() != -24 || Math.abs(t2.ga() * Math.pow(0.50, 24) - ALT) > 3.552713678800501e-15)
                 throw new ArithmeticException("_log: LOG(2) must be precomputed.");
         } else it2 = 1;
 
@@ -3556,7 +3556,7 @@ class PreciseNumber implements Cloneable {
                 st = is * i1;
 
                 _mul(sk1, sk2, sk3, lnw);
-                mpdivd(sk3, new Chunk(st), sk2, lnw);
+                mpdivd(sk3, new Chunk(st, 0), sk2, lnw);
                 add(sk0, sk2, sk3, lnw);
                 eq(sk3, sk0, lnw);
             }
@@ -3568,9 +3568,9 @@ class PreciseNumber implements Cloneable {
 
         mdc(a, t1);
 
-        t2.n = 12 * lnw + 48 - t1.n;
-        tn = t2.n;
-        t2.a = 1.0;
+        t2.sn(12 * lnw + 48 - t1.gn());
+        tn = t2.gn();
+        t2.sa(1.0);
 
         if (it2 == 1) dmc(t2, sk0);
         else muld(a, t2, sk0, lnw);
@@ -3578,13 +3578,13 @@ class PreciseNumber implements Cloneable {
         eq(f1, sk1, lnw);
         _div(f4, sk0, sk2, lnw);
         mpagmx(sk1, sk2, lnw);
-        muld(sk1, new Chunk(2.0), sk0, lnw);
+        muld(sk1, new Chunk(2.0, 0), sk0, lnw);
         _div(pi, sk0, sk1, lnw);
 
         if (it2 == 1)
-            mpdivd(sk1, new Chunk(tn), sk0, lnw);
+            mpdivd(sk1, new Chunk(tn, 0), sk0, lnw);
         else {
-            muld(al2, new Chunk(tn), sk2, lnw);
+            muld(al2, new Chunk(tn, 0), sk2, lnw);
             sub(sk1, sk2, sk0, lnw);
         }
         eq(sk0, b, lnw);
@@ -3620,14 +3620,14 @@ class PreciseNumber implements Cloneable {
         f.mantissa[1] = 0;
 
         _sqr(f, sk2, lnw);
-        muld(sk2, new Chunk(0.50), sk1, lnw);
+        muld(sk2, new Chunk(0.50, 0), sk1, lnw);
 
         f.exponent = -1;
         f.mantissa[0] = (float)(0.50 * 1.6777216e7);
 
         sub(sk2, f, sk4, lnw);
 
-        Chunk dpe1 = new Chunk(0.50);
+        Chunk dpe1 = new Chunk(0.50, 0);
 
         for (k = 1; k <= mq; k++) {
             add(sk0, sk1, sk2, lnw);
@@ -3639,7 +3639,7 @@ class PreciseNumber implements Cloneable {
 
             t1 = Math.pow(2.0, k);
 
-            muld(sk3, new Chunk(t1), sk2, lnw);
+            muld(sk3, new Chunk(t1, 0), sk2, lnw);
             sub(sk4, sk2, sk3, lnw);
             eq(sk3, sk4, lnw);
         }
@@ -3680,12 +3680,12 @@ class PreciseNumber implements Cloneable {
         _mul(a, sk2, sk1, lnw);
 
         sk1.sign = true;
-        Chunk dpe2 = new Chunk(), dpe3 = new Chunk();
+        Chunk dpe2 = new Chunk(0, 0), dpe3 = new Chunk(0, 0);
 
         mdc(sk1, dpe2);
         Chunk.dpdec(dpe2, dpe3);
 
-        int m2 = dpe3.n >> 1;
+        int m2 = dpe3.gn() >> 1;
 
         _npw(sk0, m2, sk3, lnw);
         _div(sk1, sk3, sk0, lnw);

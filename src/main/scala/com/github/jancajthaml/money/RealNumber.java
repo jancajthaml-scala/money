@@ -41,12 +41,14 @@ class RealNumber extends PreciseNumber {
         super(size, false);
     }
 
+    /*
     public RealNumber assign(PreciseNumber ja) {
         if (ja != this)
             eq(ja, this, Math.min(nw, this.maxnw - 1));
 
         return this;
     }
+    */
 
     public RealNumber add(RealNumber ja) {
         RealNumber res = new RealNumber();
@@ -89,75 +91,6 @@ class RealNumber extends PreciseNumber {
 
         return res;
     }
-
-    public RealNumber abs() {
-        RealNumber res = new RealNumber();
-
-        eq(this, res, nw);
-
-        res.sign = true;
-
-        return res;
-    }
-
-    public RealNumber max(RealNumber val) {
-        return (compare(this, val, nw) >= 0) ? this : val;
-    }
-
-    public RealNumber min(RealNumber val) {
-        return (compare(this, val, nw) < 0) ? this : val;
-    }
-
-    public RealNumber sign(PreciseNumber val) {
-        RealNumber res = new RealNumber();
-
-        eq(this, res, nw);
-
-        res.sign = val.sign;
-
-        return res;
-    }
-
-    public RealNumber pow(PreciseNumber exponent) {
-        RealNumber res = new RealNumber();
-        PreciseNumber mpt1 = new PreciseNumber();
-        PreciseNumber mpt2 = new PreciseNumber();
-
-        _log(this, PI, LOG2, mpt1, nw);
-        _mul(mpt1, exponent, mpt2, nw);
-        _exp(mpt2, PI, LOG2, mpt1, nw);
-
-        return res;
-    }
-
-    public RealNumber pow(int exponent) {
-        RealNumber res = new RealNumber();
-
-        _npw(this, exponent, res, nw);
-
-        return res;
-    }
-
-    public RealNumber pow(double exponent) {
-        RealNumber res = new RealNumber();
-        PreciseNumber mpt1 = new PreciseNumber();
-        PreciseNumber mpt2 = new PreciseNumber();
-
-        _log(this, PI, LOG2, mpt1, nw);
-        muld(mpt1, new Chunk(exponent), mpt2, nw);
-        _exp(mpt2, PI, LOG2, res, nw);
-
-        return res;
-    }
-
-    public RealNumber sqrt() {
-        RealNumber res = new RealNumber();
-
-        _sqr(this, res, nw);
-
-        return res;
-    }
-
     
     static {
         PI = new RealNumber(mp21, false);
@@ -167,7 +100,7 @@ class RealNumber extends PreciseNumber {
 
         PreciseNumber t2 = new PreciseNumber(6, false);
 
-        dmc(new Chunk(2), t2);
+        dmc(new Chunk(2, 0), t2);
         _log(t2, PI, LOG2, LOG2, nw + 1);
 
         PI.number_words--;

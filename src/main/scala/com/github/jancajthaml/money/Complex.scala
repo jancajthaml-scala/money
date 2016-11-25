@@ -5,7 +5,6 @@ import Complex._
 private[money] object Complex {
 
   private def hypot(x: Double, y: Double): Double = Math.sqrt(x * x + y * y)
-
 }
 
 private[money] class Complex(private var re: Double, private var im: Double) extends Number with Cloneable {
@@ -91,35 +90,6 @@ private[money] class Complex(private var re: Double, private var im: Double) ext
   def divide(d2: Complex): Complex = {
     val denom = d2.re * d2.re + d2.im * d2.im
     new Complex((re * d2.re + im * d2.im) / denom, (im * d2.re - re * d2.im) / denom)
-  }
-
-  def addEqual(d: Complex): Complex = {
-    re += d.re
-    im += d.im
-    this
-  }
-
-  def subtractEqual(d: Complex): Complex = {
-    re -= d.re
-    im -= d.im
-    this
-  }
-
-  def multiplyEqual(d: Complex): Complex = {
-    val oldRe = re
-    val oldDRe = d.re
-    re = re * d.re - im * d.im
-    im = im * oldDRe + oldRe * d.im
-    this
-  }
-
-  def divideEqual(d: Complex): Complex = {
-    val denom = d.re * d.re + d.im * d.im
-    val oldRe = re
-    val oldDRe = d.re
-    re = (re * d.re + im * d.im) / denom
-    im = (im * oldDRe - oldRe * d.im) / denom
-    this
   }
 
   override def equals(d1: Any): Boolean = {
