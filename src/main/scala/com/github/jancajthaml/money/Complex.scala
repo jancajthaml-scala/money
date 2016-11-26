@@ -1,21 +1,12 @@
 package com.github.jancajthaml.money
 
-import Complex._
+class Complex(private var re: Double, private var im: Double) extends Number with Cloneable {
 
-private[money] object Complex {
+  private def rtop(): Complex =
+    new Complex(Math.sqrt(re * re + im * im), Math.atan2(im, re))
 
-  private def hypot(x: Double, y: Double): Double = Math.sqrt(x * x + y * y)
-}
-
-private[money] class Complex(private var re: Double, private var im: Double) extends Number with Cloneable {
-
-  private def rtop(): Complex = {
-    new Complex(hypot(re, im), Math.atan2(im, re))
-  }
-
-  private def ptor(): Complex = {
+  private def ptor(): Complex =
     new Complex(re * Math.cos(im), re * Math.sin(im))
-  }
 
   def this(r: Double) {
     this(r, 0)
@@ -40,7 +31,7 @@ private[money] class Complex(private var re: Double, private var im: Double) ext
 
   def aimag(): Double = im
 
-  def abs(): Double = hypot(re, im)
+  def abs(): Double = Math.sqrt(re * re + im * im)
 
   def arg(): Double = Math.atan2(im, re)
 
@@ -49,32 +40,6 @@ private[money] class Complex(private var re: Double, private var im: Double) ext
   def exp(d: Complex): Complex = {
     val r = Math.exp(re)
     new Complex(r * Math.cos(im), r * Math.sin(im))
-  }
-
-  def pow(r: Double): Complex = {
-    val polar = this.rtop()
-    polar.re = Math.pow(polar.re, r)
-    polar.im *= r
-    polar.ptor()
-  }
-
-  def power(r: Int): Complex = r match {
-    case 0 => new Complex(1)
-    case 1 => new Complex(this)
-    case 2 => this.multiply(this)
-    case _ => 
-      var polar = this.rtop()
-      polar.re = Math.pow(polar.re, r)
-      polar.im *= r
-      polar.ptor()
-
-  }
-
-  def sqrt(): Complex = {
-    val polar = this.rtop()
-    polar.re = Math.sqrt(polar.re)
-    polar.im = 0.5 * polar.im
-    polar.ptor()
   }
 
   def add(d2: Complex): Complex = new Complex(re + d2.re, im + d2.im)
@@ -101,8 +66,6 @@ private[money] class Complex(private var re: Double, private var im: Double) ext
   }
 
   override def clone(): AnyRef = new Complex(re, im)
-
-  override def toString(): String = s"(${new java.lang.Double(re)},${new java.lang.Double(im)})"
 
   override def hashCode(): Int = (new java.lang.Double(re / 2 + im / 2)).hashCode
 
