@@ -1,14 +1,5 @@
 package com.github.jancajthaml.money
 
-import scala.language.implicitConversions
-
-/**
-  * @author jan.cajthaml
-  */
-//object Money
-
-// TODO/FIXME remove RealNumber and use PreciseNumber instead
-
 /**
   * The money representation
   *
@@ -18,8 +9,6 @@ import scala.language.implicitConversions
   * @param currency
   */
 case class Money(val amount: PreciseNumber, val currency: String) extends Comparable[Money] {
-
-  //class MoneyMath(l: Money) extends Comparable[Money] {
 
   val add = (r: Money) => this.+(r)
 
@@ -70,7 +59,4 @@ case class Money(val amount: PreciseNumber, val currency: String) extends Compar
   private def check(r: Money) = if (currency != r.currency) {
     throw new UnsupportedOperationException(s"${this} and ${r} are of different currencies")
   } else r
-  //}
-
-  //implicit def pimp(p: Money) = new MoneyMath(p)
 }

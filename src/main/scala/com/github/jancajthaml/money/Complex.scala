@@ -2,26 +2,6 @@ package com.github.jancajthaml.money
 
 class Complex(private var re: Double, private var im: Double) extends Number with Cloneable {
 
-  private def rtop(): Complex =
-    new Complex(Math.sqrt(re * re + im * im), Math.atan2(im, re))
-
-  private def ptor(): Complex =
-    new Complex(re * Math.cos(im), re * Math.sin(im))
-
-  def this(r: Double) {
-    this(r, 0)
-  }
-
-  def this() {
-    this(0, 0)
-  }
-
-  def this(d: Complex) {
-    this()
-    re = d.re
-    im = d.im
-  }
-
   def set(re: Double, im: Double) {
     this.re = re
     this.im = im
@@ -31,40 +11,32 @@ class Complex(private var re: Double, private var im: Double) extends Number wit
 
   def aimag(): Double = im
 
-  def abs(): Double = Math.sqrt(re * re + im * im)
-
   def arg(): Double = Math.atan2(im, re)
 
   def conjg(): Complex = new Complex(re, -im)
 
-  def exp(d: Complex): Complex = {
-    val r = Math.exp(re)
-    new Complex(r * Math.cos(im), r * Math.sin(im))
-  }
-
-  def add(d2: Complex): Complex = new Complex(re + d2.re, im + d2.im)
+  def add(r: Complex): Complex = new Complex(re + r.re, im + r.im)
 
   def negate(): Complex = new Complex(-re, -im)
 
-  def subtract(d2: Complex): Complex = new Complex(re - d2.re, im - d2.im)
+  def subtract(r: Complex): Complex = new Complex(re - r.re, im - r.im)
 
-  def multiply(d2: Complex): Complex = {
-    new Complex(re * d2.re - im * d2.im, re * d2.im + im * d2.re)
+  def multiply(r: Complex): Complex = new Complex(re * r.re - im * r.im, re * r.im + im * r.re)
+
+  def divide(r: Complex): Complex = {
+    val denom = r.re * r.re + r.im * r.im
+    new Complex((re * r.re + im * r.im) / denom, (im * r.re - re * r.im) / denom)
   }
 
-  def divide(d2: Complex): Complex = {
-    val denom = d2.re * d2.re + d2.im * d2.im
-    new Complex((re * d2.re + im * d2.im) / denom, (im * d2.re - re * d2.im) / denom)
-  }
-
-  override def equals(d1: Any): Boolean = {
+  override def equals(r: Any): Boolean = {
     try {
-      (re == d1.asInstanceOf[Complex].re && im == d1.asInstanceOf[Complex].im)
+      (re == r.asInstanceOf[Complex].re && im == r.asInstanceOf[Complex].im)
     } catch {
       case e: ClassCastException => false
     }
   }
 
+  // TODO/FIXME delete and remove Clonable interface
   override def clone(): AnyRef = new Complex(re, im)
 
   override def hashCode(): Int = (new java.lang.Double(re / 2 + im / 2)).hashCode

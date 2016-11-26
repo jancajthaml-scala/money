@@ -194,8 +194,10 @@ class PreciseNumber implements Cloneable {
 
   private static void _add(PreciseNumber a, PreciseNumber b, PreciseNumber c, int lnw) {
     int i = 0;
-    int na = Math.min(a.number_words, lnw);
-    int nb = Math.min(b.number_words, lnw);
+
+    int na = (a.number_words > lnw) ? lnw : a.number_words;
+    int nb = (b.number_words > lnw) ? lnw : b.number_words;
+
     double d[] = new double[lnw + 5];
     double db = (a.sign == b.sign) ? 1.0 : -1.0;
     int ixa = a.exponent;
@@ -284,7 +286,9 @@ class PreciseNumber implements Cloneable {
       return;
     }
 
-    if (a.sign == false) throw new ArithmeticException("mpcbrt: argument is negative --> " + a);
+    if (!a.sign) {
+      throw new ArithmeticException("mpcbrt: argument is negative --> " + a);
+    }
 
     int nws = lnw;
     Chunk t1 = new Chunk(0, 0);
@@ -314,9 +318,9 @@ class PreciseNumber implements Cloneable {
       int nw1 = lnw;
       lnw = Math.min((lnw << 1) - 2, nws) + 1;
       int nw2 = lnw;
-      boolean stop = false;
+      boolean no_stop = true;
 
-      while (!stop) {
+      while (no_stop) {
         mul(b, b, sk1, lnw);
         mul(b, sk1, sk2, lnw);
         mul(sk0, sk2, sk1, lnw);
@@ -335,7 +339,7 @@ class PreciseNumber implements Cloneable {
         if (k == mq - 3 && iq == 0) {
           iq = 1;
         } else {
-          stop = true;
+          no_stop = false;
         }
       }
     }
@@ -477,7 +481,7 @@ class PreciseNumber implements Cloneable {
       d[j - 2] = t0;
     }
 
-    boolean stopped = false;
+    boolean no_stop = true;
 
     for (j = na + 2; j <= lnw + 3; j++) {
       t1 = 2.81474976710656e14 * d[j - 2] + 1.6777216e7 * d[j - 1] + d[j];
@@ -510,7 +514,7 @@ class PreciseNumber implements Cloneable {
       d[j - 2] = t0;
 
       if (ss == 0.0) {
-        stopped = true;
+        no_stop = false;
         break;
       }
 
@@ -519,7 +523,7 @@ class PreciseNumber implements Cloneable {
       }
     }
 
-    if (!stopped) {
+    if (no_stop) {
       j = lnw + 3;
     }
 
@@ -1297,9 +1301,9 @@ class PreciseNumber implements Cloneable {
       mpnpwr(f, nx, sk0, lnw);
       mpdiv(a, sk0, sk1, lnw);
 
-      boolean stop = false;
+      boolean no_stop = true;
 
-      while (!stop) {
+      while (no_stop) {
         if (sk1.exponent < 0) {
           nx = nx - 1;
 
@@ -1311,7 +1315,7 @@ class PreciseNumber implements Cloneable {
           mpdivd(sk1, new Chunk(10.0, 0), sk0, lnw);
           _eq(sk0, sk1, lnw);
         } else {
-          stop = true;
+          no_stop = false;
         }
       }
       sk1.sign = true;
@@ -1335,7 +1339,7 @@ class PreciseNumber implements Cloneable {
     b[14] = ' ';
     b[15] = 'x';
     b[16] = ' ';
-    b[17] = (a.sign == false) ? '-' : ' ';
+    b[17] = a.sign ? ' ' : '-';
     nn = (na != 0) ? ((int) sk1.mantissa[0]) : 0;
     ca = String.valueOf(nn).toCharArray();
     b[18] = ca[0];
@@ -1435,6 +1439,7 @@ class PreciseNumber implements Cloneable {
 
         if (b[18] == '9') {
           b[18] = '1';
+          // TODO/FIXME avoid creating String parse smarter
           ca = String.valueOf(nx + 1).toCharArray();
           k = 0;
 
@@ -1447,13 +1452,16 @@ class PreciseNumber implements Cloneable {
         } else {
           ca[0] = b[18];
           ca[1] = '\0';
+          // TODO/FIXME avoid creating String parse smarter
           nn = Integer.parseInt(new String(ca, 0, 1));
+          // TODO/FIXME avoid creating String parse smarter
           ca = String.valueOf(nn + 1).toCharArray();
           b[18] = ca[0];
         }
       } else {
         ca[0] = b[i];
         ca[1] = '\0';
+        // TODO/FIXME avoid creating String parse smarter
         nn = Integer.parseInt(new String(ca, 0, 1));
         ca = String.valueOf(nn + 1).toCharArray();
         b[i] = ca[0];
@@ -1509,10 +1517,12 @@ class PreciseNumber implements Cloneable {
     char ai = 0;
     char ca[] = new char[81];
     int nw3 = lnw + 3;
+
     PreciseNumber f = new PreciseNumber(6, false);
     PreciseNumber sk0 = new PreciseNumber(nw3, false);
     PreciseNumber sk1 = new PreciseNumber(nw3, false);
     PreciseNumber sk2 = new PreciseNumber(nw3, false);
+
     int nws = lnw++;
     int i1 = 0;
     int nn = 0;
@@ -1562,11 +1572,12 @@ class PreciseNumber implements Cloneable {
     f.number_words = 1;
     f.sign = true;
     f.exponent = 0;
+
     int it = 0;
     int mm = 0;
-    boolean stop = false;
+    boolean no_stop = true;
 
-    while (!stop) {
+    while (no_stop) {
       ip = 0;
 
       for (mm = 0; mm < 6; mm++) {
@@ -1622,7 +1633,7 @@ class PreciseNumber implements Cloneable {
         }
         it = 1;
       } else {
-        stop = true;
+        no_stop = false;
       }
     }
 
@@ -1646,7 +1657,7 @@ class PreciseNumber implements Cloneable {
 
   static void mpfftcr(int is, int m, int n, Complex x[], double y[]) {
     int k = 0;
-    final Complex pointFive = new Complex(0.5);
+    final Complex pointFive = new Complex(0.5, 0.0);
     final Complex zeroOne = new Complex(0.0, 1.0);
     int mx = (int) uu1[0].real();
 
@@ -1663,6 +1674,7 @@ class PreciseNumber implements Cloneable {
     int n2 = n >> 1;
     int n4 = n >> 2;
     dc1[0] = pointFive.multiply(new Complex((x[0].add(x[n2])).real(), (x[0].subtract(x[n2])).real()));
+    // TODO/FIXME create explicitly, remove need for clone
     dc1[n4] = (is == 1) ? x[n4].conjg() : ((Complex) x[n4].clone());
     int ku = n2;
 
@@ -1704,6 +1716,15 @@ class PreciseNumber implements Cloneable {
     }
 
     Complex dc1[] = new Complex[n >> 1], a1, a2, z1, z2;
+
+    /*
+      INFO
+
+      m -> int
+      result -> int
+
+      implement faster using int aritmetics hacks
+    */
     int n1 = (int) Math.pow(2, (m >> 1));
     int n2 = n >> 1;
     int n4 = n >> 2;
@@ -1715,7 +1736,7 @@ class PreciseNumber implements Cloneable {
     mpfft1(is, m - 1, n1, n2 / n1, dc1, y);
 
     y[0] = new Complex(2.0 * (dc1[0].real() + dc1[0].aimag()), 0.0);
-    y[n4] = ((is == 1) ? (dc1[n4]) : ((dc1[n4].conjg()))).multiply(new Complex(2.0));
+    y[n4] = ((is == 1) ? (dc1[n4]) : ((dc1[n4].conjg()))).multiply(new Complex(2.0, 0.0));
     y[n2] = new Complex(2.0 * (dc1[0].real() - dc1[0].aimag()), 0.0);
     int ku = n2;
     final Complex zeroMinOne = new Complex(0.0, -1.0);
@@ -1751,8 +1772,11 @@ class PreciseNumber implements Cloneable {
     int yrow = n2 + 2;
     int m1 = (m + 1) >> 1;
     int m2 = m - m1;
+
+    // TODO/FIXIXME dont use Math.min use ternar
     int nr1 = Math.min(n1, 16);
     int nr2 = Math.min(n2, 16);
+
     int ku = (int) uu2[m - 1].real();
 
     for (i = 0; i < n1; i += nr1) {
@@ -1840,9 +1864,18 @@ class PreciseNumber implements Cloneable {
     int j = 0;
     int k = 0;
     int n1 = n >> 1;
+
+    /*
+      TODO/FIXME
+      implement faster using int aritmetics hacks
+    */
     int lk = (int) Math.pow(2, (l - 1));
+    /*
+      TODO/FIXME
+      implement faster using int aritmetics hacks
+    */
     int li = (int) Math.pow(2, (m - l));
-    int lj = (lk << 1);
+    int lj = lk << 1;
     int ku = li;
     int i11 = 0;
     int i12 = 0;
@@ -1875,7 +1908,11 @@ class PreciseNumber implements Cloneable {
     double an = 0.0;
     double t1 = 0.0;
     double t2 = 0.0;
-    int ncr1 = (int) Math.pow(2, (pointer - 1));
+    /*
+      TODO/FIXME
+      implement faster using int aritmetics hacks
+    */
+    int ncr1 = (int) Math.pow(2, pointer - 1);
     int n1 = 0;
     int n2 = 0;
 
@@ -1884,7 +1921,9 @@ class PreciseNumber implements Cloneable {
         case 1: {
           for (k = 0; k < (n << 1); k++) {
             t1 = 0.0;
+            // TODO/FIXME dont use Math.max use ternar
             n1 = Math.max(k - n + 2, 1);
+            // TODO/FIXME dont use Math.min use ternar
             n2 = Math.min(k + 1, n);
 
             for (j = n1 - 1; j < n2; j++) {
@@ -1899,7 +1938,9 @@ class PreciseNumber implements Cloneable {
         case 2: {
           for (k = 0; k < (n << 1); k++) {
             t1 = 0.0;
+            // TODO/FIXME dont use Math.max use ternar
             n1 = Math.max(k - n + 2, 1);
+            // TODO/FIXME dont use Math.min use ternar
             n2 = Math.min(k + 1, n);
 
             for (j = n1 - 1; j < n2; j++) {
@@ -1950,13 +1991,20 @@ class PreciseNumber implements Cloneable {
       return;
     }
 
+    // TODO/FIXME redundat calculations
     double d1[] = new double[3 * n + 2];
     double d2[] = new double[3 * n + 2];
     double d3[] = new double[3 * n + 2];
+    // TODO/FIXME redundat calculations
     Complex dc1[] = new Complex[3 * (n >> 1) + (nsq << 1) + 3];
     Complex dc2[] = new Complex[3 * (n >> 1) + (nsq << 1) + 3];
+
     t1 = 0.75 * n;
     int m1 = (int)(1.4426950408889633 * Math.log(t1) + 1.0 - 5.6843418860808015e-14);
+    /*
+      TODO/FIXME
+      implement faster using int aritmetics hacks
+    */
     n1 = (int)(Math.pow(2, m1));
     int m2 = m1 + 1;
     n2 = n1 << 1;
@@ -2077,7 +2125,12 @@ class PreciseNumber implements Cloneable {
     PreciseNumber sk1 = new PreciseNumber(nw3, false);
     PreciseNumber sk2 = new PreciseNumber(nw3, false);
 
-    int nb = Math.min(b.number_words, lnw);
+    int nb = (b.number_words > lnw) ? lnw : b.number_words; //Math.min(b.number_words, lnw);
+
+    /*
+      TODO/FIXME
+      implement faster using int aritmetics hacks
+    */
     int ncr = (int)(Math.pow(2, pointer));
 
     if (nb == 0) {
@@ -2091,6 +2144,7 @@ class PreciseNumber implements Cloneable {
 
     int nws = lnw;
     t1 = lnw;
+
     int mq = (int)(1.4426950408889633 * Math.log(t1) + 1.0 - 5.6843418860808015e-14);
     lnw = ncr + 1;
     f.number_words = 1;
@@ -2107,11 +2161,12 @@ class PreciseNumber implements Cloneable {
 
     for (k = pointer + 1; k <= mq - 1; k++) {
       nw1 = lnw;
+      // TODO/FIXME use ternar
       lnw = Math.min((lnw << 1) - 2, nws) + 1;
       nw2 = lnw;
-      boolean stop = false;
+      boolean no_stop = true;
 
-      while (!stop) {
+      while (no_stop) {
         _mul(b, c, sk0, lnw);
         _sub(f, sk0, sk1, lnw);
 
@@ -2128,7 +2183,7 @@ class PreciseNumber implements Cloneable {
         if (k == mq - 3 && iq == 0) {
           iq = 1;
         } else {
-          stop = true;
+          no_stop = false;
         }
       }
     }
@@ -2136,6 +2191,7 @@ class PreciseNumber implements Cloneable {
     _mul(a, c, sk0, lnw);
 
     nw1 = lnw;
+    // TODO/FIXME use ternar
     lnw = Math.min((lnw << 1) - 2, nws) + 1;
     nw2 = lnw;
 
@@ -2161,8 +2217,9 @@ class PreciseNumber implements Cloneable {
     double t3 = 0.0;
     double t4 = 0.0;
     int i = 0;
-    int na = Math.min(a.number_words, lnw);
-    int nb = Math.min(b.number_words, lnw);
+    int na = (a.number_words > lnw) ? lnw : a.number_words;
+    int nb = (b.number_words > lnw) ? lnw : b.number_words;
+
     int ncr = (int)(Math.pow(2, pointer));
 
     if (na <= ncr || nb <= ncr) {
@@ -2199,13 +2256,17 @@ class PreciseNumber implements Cloneable {
       d2[i] = 0.0;
     }
 
+    // TODO/FIXME use ternar
     int nn = Math.max(na, nb) << 1;
     int nx = (int)(Math.sqrt(3.0 * nn) + 5.6843418860808015e-14);
 
     mplconv(2, nn, nx, d1, d2, d3);
 
+    // TODO/FIXME use ternar
     int nc = Math.min(na + nb, lnw);
+    // TODO/FIXME use ternar
     int nc1 = Math.min(lnw + 1, na + nb - 1);
+
     d1[0] = fSign(nc, (!(a.sign ^ b.sign)) ? 1.0 : -1.0);
     d1[1] = a.exponent + b.exponent + 1;
     d1[2] = d3[0];

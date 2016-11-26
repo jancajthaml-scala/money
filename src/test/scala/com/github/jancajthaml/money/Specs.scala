@@ -14,10 +14,10 @@ class MoneySpecs extends FlatSpec with Matchers {
       m += Money(pivot, "CZK")
     })
 
-    k *= new PreciseNumber("1000000")
+    k *= Money(new PreciseNumber("1000000"), "CZK")
 
-    println(s"1000000 x add --> ${m}")
-    println(s"* 1000000 --> ${k}")
+    println(s"1000000 times add 1 --> ${m}")
+    println(s"1 time multiply by 1000000 --> ${k}")
 
     1 should === (1)
   }
