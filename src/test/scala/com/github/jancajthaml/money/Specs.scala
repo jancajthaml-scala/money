@@ -5,16 +5,19 @@ import org.scalatest.{FlatSpec, Matchers}
 class MoneySpecs extends FlatSpec with Matchers {
 
   "dummy" should "pass" in {
-    val pivot = new PreciseNumber("0.0000001")
+    val pivot = new PreciseNumber("0.000001")
     
     var m = Money(new PreciseNumber("0"), "CZK")
+    var k = Money(pivot, "CZK")
     
-    (1 to 10000000).foreach(x => {
+    (1 to 1000000).foreach(x => {
       m += Money(pivot, "CZK")
     })
 
-    //println(s"positive --> ${pos}")
-    println(s"result --> ${m}")
+    k *= new PreciseNumber("1000000")
+
+    println(s"1000000 x add --> ${m}")
+    println(s"* 1000000 --> ${k}")
 
     1 should === (1)
   }
