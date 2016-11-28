@@ -1,14 +1,15 @@
 package com.github.jancajthaml.money;
 
-class PreciseNumber { // implements Cloneable {
+class PreciseNumber {
+
+  // TODO/FIXME precision error in subtraction
 
   private static int precision_current = 0;
 
-  static int round = 0;
-  static int precision_digits_current = 0;
+  //static int precision_digits_current = 0;
   static int precision_words = 0;
   static int precision_digits = 0;
-  static int precision_digits_out = 0;
+  //static int precision_digits_out = 0;
   static int ellog10 = 0;
   static int mp2 = 0;
   static int mp21 = 0;
@@ -17,20 +18,19 @@ class PreciseNumber { // implements Cloneable {
   static Complex[] uu2 = null;
 
   static {
-    setMaximumPrecision(100);
+    setMaximumPrecision(1000);
   }
 
   public static final void setMaximumPrecision(int p) {
     if (p != precision_current) {
-      precision_current = Math.min(Math.abs(p), 3600);
-      round = 1;
+      precision_current = Math.min(p < 0 ? -p : p, 3600);
       precision_digits = precision_current;
-      precision_digits_out = 10000000;
+      //precision_digits_out = 35;
       ellog10 = 10 - precision_digits;
       precision_words = (int)((precision_digits / 7.224719896) + 1);
       mp2 = precision_words + 2;
       mp21 = mp2 + 1;
-      precision_digits_current = precision_digits_out;
+      //precision_digits_current = precision_digits_out;
       nw = precision_words;
       int n = nw + 1;
       double ti = 0.0;
@@ -104,22 +104,18 @@ class PreciseNumber { // implements Cloneable {
   boolean sign = false;
   int number_words = 0;
   int exponent = 0;
-  public float mantissa[] = null;
-  static double t30 = 0;
-  static double r30 = 0;
-  static double sd = 314159265;
-  static Integer randMutex = new Integer(0);
+  public double[] mantissa = null;
   
   private PreciseNumber(PreciseNumber in) {
     maxnw = in.maxnw;
 
     if (maxnw > 0) {
-      mantissa = new float[maxnw];
+      mantissa = new double[maxnw];
       _eq(in , this, nw);
     } else {
       exponent = in .exponent;
-      sign = in .sign;
-      number_words = in .number_words;
+      sign = in.sign;
+      number_words = in.number_words;
       mantissa = null;
     }
   }
@@ -132,7 +128,7 @@ class PreciseNumber { // implements Cloneable {
     exponent = 0;
 
     if (maxnw >= 1) {
-      mantissa = new float[maxnw];
+      mantissa = new double[maxnw];
       mantissa[0] = 0;
     } else {
       mantissa = null;
@@ -141,7 +137,7 @@ class PreciseNumber { // implements Cloneable {
 
   PreciseNumber(boolean b, int precision) {
     maxnw = precisionToSize(precision);
-    mantissa = new float[maxnw];
+    mantissa = new double[maxnw];
     mantissa[0] = 0;
     sign = true;
     number_words = 0;
@@ -151,14 +147,14 @@ class PreciseNumber { // implements Cloneable {
   // TODO/INFO mostly used
   PreciseNumber(double ia, int precision) {
     maxnw = precisionToSize(precision);
-    mantissa = new float[maxnw];
+    mantissa = new double[maxnw];
     dmc(new Chunk(ia, 0), this);
   }
 
   PreciseNumber(String str) {
     char temp[] = str.toCharArray();
     maxnw = precisionToSize(precision_digits);
-    mantissa = new float[maxnw];
+    mantissa = new double[maxnw];
     fromString(temp, temp.length, this, Math.min(nw, maxnw - 2));
   }
 
@@ -205,42 +201,37 @@ class PreciseNumber { // implements Cloneable {
       d[1] = 0;
 
       if (a.sign == b.sign) {
-        // TODO/FIXME use System.arraycopy
-        for (i = 0; i < m1; i++) {
-          d[i + 2] = a.mantissa[i];
+        //System.out.println("same signs");
+        if (m1 > 0) {
+          System.arraycopy(a.mantissa, 0, d, 2, m1);
         }
         for (i = m1; i < m2; i++) {
-          d[i + 2] = a.mantissa[i] + (double)(b.mantissa[i - ish]);
+          d[i + 2] = a.mantissa[i] + b.mantissa[i - ish];
         }
-        // TODO/FIXME use System.arraycopy
-        for (i = m2; i < m3; i++) {
-          d[i + 2] = a.mantissa[i];
+        if (m3 > m2) {
+          System.arraycopy(a.mantissa, m2, d, m2 + 2, m3 - m2);
         }
-        // TODO/FIXME use System.arraycopy
-        for (i = m3; i < m4; i++) {
-          d[i + 2] = 0.0;
+        if (m4 > m3) {
+          System.arraycopy(new double[m4], 0, d, m3 + 2, m4 - m3);
         }
-        for (i = m4; i < m5; i++) {
-          d[i + 2] = (double)(b.mantissa[i - ish]);
+        if (m5 > m4) {
+          System.arraycopy(b.mantissa, m4 - ish, d, m4 + 2, m5 - m4);
         }
       } else {
-        // TODO/FIXME use System.arraycopy
-        for (i = 0; i < m1; i++) {
-          d[i + 2] = a.mantissa[i];
+        if (m1 > 0) {
+          System.arraycopy(a.mantissa, 0, d, 2, m1);
         }
         for (i = m1; i < m2; i++) {
-          d[i + 2] = a.mantissa[i] + (double)(-b.mantissa[i - ish]);
+          d[i + 2] = a.mantissa[i] - b.mantissa[i - ish];
         }
-        // TODO/FIXME use System.arraycopy
-        for (i = m2; i < m3; i++) {
-          d[i + 2] = a.mantissa[i];
+        if (m3 > m2) {
+          System.arraycopy(a.mantissa, m2, d, m2 + 2, m3 - m2);
         }
-        // TODO/FIXME use System.arraycopy
-        for (i = m3; i < m4; i++) {
-          d[i + 2] = 0.0;
+        if (m4 > m3) {
+          System.arraycopy(new double[m4], 0, d, m3 + 2, m4 - m3);
         }
         for (i = m4; i < m5; i++) {
-          d[i + 2] = (double)(-b.mantissa[i - ish]);
+          d[i + 2] = -b.mantissa[i - ish];
         }
       }
       
@@ -249,47 +240,51 @@ class PreciseNumber { // implements Cloneable {
       d[nd + 2] = 0.0;
       d[nd + 3] = 0.0;
     } else {
-      // TODO/FIXME delete -ish and use approprielty below
-      int nsh = -ish;
-      int m1 = nb < nsh ? nb : nsh;
-      int m2 = Math.min(nb, na + nsh);
+      int m1 = nb < -ish ? nb : -ish;
+      int m2 = nb < (na + -ish) ? nb : (na - ish);
       int m3 = nb;
-      int m4 = Math.min(nb > nsh ? nb : nsh, lnw + 1);
-      int m5 = Math.min(Math.max(nb, na + nsh), lnw + 1);
+      int m4 = Math.min(nb > -ish ? nb : -ish, lnw + 1);
+      int m5 = Math.min(Math.max(nb, na - ish), lnw + 1);
       d[0] = 0;
       d[1] = 0;
 
       if (a.sign == b.sign) {
+        // TODO/FIXME System.arraycopy
         for (i = 0; i < m1; i++) {
-          d[i + 2] = (double)(b.mantissa[i]);
+          d[i + 2] = b.mantissa[i];
         }
         for (i = m1; i < m2; i++) {
-          d[i + 2] = a.mantissa[i - nsh] + (double)(b.mantissa[i]);
+          d[i + 2] = a.mantissa[i + ish] + b.mantissa[i];
         }
+        // TODO/FIXME System.arraycopy
         for (i = m2; i < m3; i++) {
-          d[i + 2] = (double)(b.mantissa[i]);
+          d[i + 2] = b.mantissa[i];
         }
+        // TODO/FIXME System.arraycopy
         for (i = m3; i < m4; i++) {
           d[i + 2] = 0.0;
         }
+        // TODO/FIXME System.arraycopy
         for (i = m4; i < m5; i++) {
-          d[i + 2] = a.mantissa[i - nsh];
+          d[i + 2] = a.mantissa[i + ish];
         }
       } else {
         for (i = 0; i < m1; i++) {
-          d[i + 2] = (double)(-b.mantissa[i]);
+          d[i + 2] = -b.mantissa[i];
         }
         for (i = m1; i < m2; i++) {
-          d[i + 2] = a.mantissa[i - nsh] + (double)(-b.mantissa[i]);
+          d[i + 2] = a.mantissa[i + ish] - b.mantissa[i];
         }
         for (i = m2; i < m3; i++) {
-          d[i + 2] = (double)(-b.mantissa[i]);
+          d[i + 2] = -b.mantissa[i];
         }
+        // TODO/FIXME System.arraycopy
         for (i = m3; i < m4; i++) {
           d[i + 2] = 0.0;
         }
+        // TODO/FIXME System.arraycopy
         for (i = m4; i < m5; i++) {
-          d[i + 2] = a.mantissa[i - nsh];
+          d[i + 2] = a.mantissa[i + ish];
         }
       }
 
@@ -936,7 +931,7 @@ class PreciseNumber { // implements Cloneable {
 
     PreciseNumber f = new PreciseNumber(6, false);
 
-    int ib = b.ga() >= 0 ? 1 : -1;
+    boolean ib = b.ga() >= 0;
 
     int n1 = b.gn() / 24;
     int n2 = b.gn() - 24 * n1;
@@ -965,7 +960,7 @@ class PreciseNumber { // implements Cloneable {
     }
 
     if (bb != (int)(bb)) {
-      dmc(new Chunk(b.ga() >= 0 ? (bb < 0 ? -bb : bb) : (bb < 0 ? bb : -bb), n1 * 24), f);
+      dmc(new Chunk(ib ? (bb < 0 ? -bb : bb) : (bb < 0 ? bb : -bb), n1 * 24), f);
       mul(f, a, c, lnw);
       return;
     }
@@ -980,7 +975,7 @@ class PreciseNumber { // implements Cloneable {
       d[i] = bb * a.mantissa[i - 2];
     }
 
-    d[0] = ((a.sign ? 1 : -1) * ib) >= 0 ? (na < 0 ? -na : na) : (na < 0 ? na : -na);
+    d[0] = (ib ? a.sign : !a.sign) ? (na < 0 ? -na : na) : (na < 0 ? na : -na);
     d[1] = a.exponent + n1;
     d[na + 2] = 0.0;
     d[na + 3] = 0.0;
@@ -989,7 +984,7 @@ class PreciseNumber { // implements Cloneable {
   }
 
   static void nint(PreciseNumber a, PreciseNumber b, int lnw) {
-    int na = Math.min(a.number_words, lnw);
+    int na = a.number_words < lnw ? a.number_words : lnw;
 
     if (na == 0) {
       b.number_words = 0;
@@ -1020,7 +1015,7 @@ class PreciseNumber { // implements Cloneable {
 
     int nc = s.number_words;
     int mc = s.exponent;
-    int nb = Math.min(mc > -1 ? (mc + 1) : 0, nc);
+    int nb = Math.min((mc > -1) ? (mc + 1) : 0, nc);
 
     if (nb == 0) {
       b.number_words = 0;
@@ -1042,7 +1037,7 @@ class PreciseNumber { // implements Cloneable {
     double t2 = 0.0;
     double t3 = 0.0;
     int i = 0;
-    boolean ia = d[0] >= 0 ? true : false;
+    boolean ia = d[0] >= 0;
     int na = Math.min((int)(d[0] < 0 ? -d[0] : d[0]), lnw);
 
     if (na == 0) {
@@ -1065,7 +1060,9 @@ class PreciseNumber { // implements Cloneable {
         t2 = 5.9604644775390625e-8 * (t3);
         t1 = (int)(t2);
 
-        if (t2 < 0.0 && t1 != t2) t1--;
+        if (t2 < 0.0 && t1 != t2) {
+          t1--;
+        }
 
         d[i] = t3 - t1 * 1.6777216e7;
       }
@@ -1081,7 +1078,7 @@ class PreciseNumber { // implements Cloneable {
         }
       } else if (d[1] > 0.0) {
         for (i = n4 - 2; i >= 1; i--) {
-          a.mantissa[i - 1] = (float) d[i];
+          a.mantissa[i - 1] = (float)(d[i]);
         }
 
         na = Math.min(na + 1, lnw);
@@ -1089,7 +1086,7 @@ class PreciseNumber { // implements Cloneable {
         needToNormalize = false;
       } else {
         for (i = 2; i < n4; i++) {
-          a.mantissa[i - 2] = (float) d[i];
+          a.mantissa[i - 2] = (float)(d[i]);
         }
         needToNormalize = false;
       }
@@ -1111,7 +1108,7 @@ class PreciseNumber { // implements Cloneable {
     PreciseNumber sk0 = new PreciseNumber(lnw3, false);
     PreciseNumber sk1 = new PreciseNumber(lnw3, false);
 
-    int na = Math.min(a.number_words, lnw);
+    int na = a.number_words < lnw ? a.number_words : lnw;
 
     if (na == 0) {
       if (n >= 0) {
@@ -1128,13 +1125,13 @@ class PreciseNumber { // implements Cloneable {
 
     lnw++;
 
-    int nn = Math.abs(n);
+    int nn = n < 0 ? -n : n;
     f1.sign = true;
     f1.number_words = 1;
     f1.exponent = 0;
     f1.mantissa[0] = 1;
     f1.mantissa[1] = 0;
-    boolean skip = false;
+    boolean no_skip = true;
 
     switch (nn) {
       case 0: {
@@ -1143,20 +1140,20 @@ class PreciseNumber { // implements Cloneable {
       }
       case 1: {
         _eq(a, b, lnw);
-        skip = true;
+        no_skip = false;
         // TODO/FIXME cannot be converted into scala
         break;
       }
       case 2: {
         mul(a, a, sk0, lnw);
         _eq(sk0, b, lnw);
-        skip = true;
+        no_skip = false;
         // TODO/FIXME cannot be converted into scala
         break;
       }
     }
 
-    if (!skip) {
+    if (no_skip) {
       t1 = nn;
       int mn = (int)(1.4426950408889633 * Math.log(t1) + 1.0 + 5.6843418860808015e-14);
 
@@ -1223,9 +1220,8 @@ class PreciseNumber { // implements Cloneable {
       na -= k > 2 ? (k - 2) : 0;
     }
 
-    // TODO/FIXME make round = 1
-    if (na == lnw && round >= 1) {
-      if ((round == 1) && (a.mantissa[na] >= 8388608f) || (round == 2) && (a.mantissa[na] >= 1)) {
+    if (na == lnw) {
+      if (a.mantissa[na] >= 8388608f) {
         a.mantissa[na - 1]++;
       }
 
@@ -1305,6 +1301,7 @@ class PreciseNumber { // implements Cloneable {
     bb.mantissa = null;
   }
 
+
   // INFO dumps to storagble/readable format
   static int mpoutc(PreciseNumber a, char b[], int lnw) {
     // TODO/FIXME fix output ad normal decimal number
@@ -1322,7 +1319,7 @@ class PreciseNumber { // implements Cloneable {
     PreciseNumber sk0 = new PreciseNumber(nw3, false);
     PreciseNumber sk1 = new PreciseNumber(nw3, false);
 
-    int na = Math.min(a.number_words, lnw);
+    int na = a.number_words < lnw ? a.number_words : lnw;
 
     lnw++;
 
@@ -1332,7 +1329,9 @@ class PreciseNumber { // implements Cloneable {
     f.mantissa[0] = 10;
     int nx = 0;
 
-    if (na != 0) {
+    if (na == 0) {
+      nx = 0;
+    } else {
       aa = a.mantissa[0];
 
       if (na >= 2) {
@@ -1370,7 +1369,7 @@ class PreciseNumber { // implements Cloneable {
         }
       }
       sk1.sign = true;
-    } else nx = 0;
+    }
 
     b[0] = '1';
     b[1] = '0';
@@ -1393,9 +1392,12 @@ class PreciseNumber { // implements Cloneable {
     b[17] = a.sign ? ' ' : '-';
     nn = (na != 0) ? ((int) sk1.mantissa[0]) : 0;
     ca = String.valueOf(nn).toCharArray();
+
+    System.out.println("underlying "+ new String(ca));
+
     b[18] = ca[0];
-    b[19] = '.';
-    int ix = 20;
+    //b[19] = '.';
+    int ix = 19;
 
     if (na == 0) {
       b[ix] = '\0';
@@ -1530,35 +1532,23 @@ class PreciseNumber { // implements Cloneable {
   }
 
   public String toString() {
-    // TODO/FIXME problem with exponent
-
-    // TODO/FIXME byte array
     StringBuffer res = new StringBuffer();
-    char az[] = new char[precision_digits_current];
+    char az[] = new char[precision_digits];
+    int nd = Math.min(mpoutc(this, az, nw < 2 ? nw : 2), 20 + (nw < 2 ? nw : 2)) + 1;
 
-    int nd = mpoutc(this, az, nw);
     int i = 0;
 
-    // TODO/FIXME system.arraycopy
-
-    // System.arraycopy(src, srcPos, dest, destPos, length);
     for (i = 0; i < nd; i++) {
       res.append(az[i]);
     }
 
     String old = res.toString();
-
+    System.out.println(">>>" + old);
     int xx = old.indexOf("x");
-
     String exponent = old.substring(old.indexOf("^") + 1, xx).trim();
-
-    //TODO/FIXME Long.parseLong ???
     int ex = Integer.parseInt(exponent);
 
-    //System.out.println(">>>> ex position at " + ex);
-
     return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
-
   }
 
   static void fromString(char a[], int n, PreciseNumber b, int lnw) {
@@ -1582,11 +1572,12 @@ class PreciseNumber { // implements Cloneable {
     int i1 = 0;
     int nn = 0;
 
-    for (i = 0; i < n; i++) {
+    boolean no_stop = true;
+
+    for (i = 0; i < n && no_stop; i++) {
       ai = a[i];
       if (ai == '.' || ai == '+' || ai == '-') {
-        // TODO/FIXME cannot be converted into scala
-        break;
+        no_stop = false;
       }
     }
 
@@ -1595,12 +1586,13 @@ class PreciseNumber { // implements Cloneable {
     }
 
     boolean exit = true;
+    no_stop = true;
 
-    for (i = i1; i < n; i++) {
-      if (a[i] != ' ') {
+    i = i1;
+
+    while (exit && i < n) {
+      if (a[i++] != ' ') {
         exit = false;
-        // TODO/FIXME cannot be converted into scala
-        break;
       }
     }
 
@@ -1608,13 +1600,13 @@ class PreciseNumber { // implements Cloneable {
       throw new NumberFormatException("inp_complex: Syntax error in literal string.");
     }
 
-    i1 = i;
+    i1 = i - 1;
 
     if (a[i1] == '+') {
       i1++;
       is = 1;
     } else if (a[i1] == '-') {
-      i1 = i1 + 1;
+      i1++;
       is = -1;
     } else {
       is = 1;
@@ -1634,7 +1626,7 @@ class PreciseNumber { // implements Cloneable {
 
     int it = 0;
     int mm = 0;
-    boolean no_stop = true;
+    no_stop = true;
 
     while (no_stop) {
       ip = 0;
@@ -1907,14 +1899,11 @@ class PreciseNumber { // implements Cloneable {
 
       if (l == m) {
         for (i = 0; i < ns; i++) {
-          for (j = 0; j < n; j++) {
-            x[i][j] = y[i][j];
-          }
+          System.arraycopy(y[i], 0, x[i], 0, n);
         }
-        return;
+      } else {
+        mpfft3(is, l + 1, ns, m, n, y, x);
       }
-
-      mpfft3(is, l + 1, ns, m, n, y, x);
     }
   }
 
@@ -1981,7 +1970,7 @@ class PreciseNumber { // implements Cloneable {
             t1 = 0.0;
             n1 = k - n + 2;
             n1 = n1 < 1 ? 1 : n1;
-            n2 = (k + 1) < n ? k + 1 : n;
+            n2 = (k + 1) < n ? (k + 1) : n;
 
             for (j = n1 - 1; j < n2; j++) {
               t1 += a[j] * a[k - j];
@@ -2030,18 +2019,14 @@ class PreciseNumber { // implements Cloneable {
         }
 
         case -2: {
-          for (k = 0; k < n - 1; k++) {
-            c[k] = 0.0;
-          }
+          System.arraycopy(new double[n - 1], 0, c, 0, n - 1);
           for (k = n - 1; k < (n << 1); k++) {
             t1 = 0.0;
             n1 = k - n + 2;
             n2 = n;
-
             for (j = n1 - 1; j < n2; j++) {
               t1 += a[j] * b[k - j];
             }
-
             c[k] = t1;
           }
           // TODO/FIXME cannot be converted into scala
@@ -2088,15 +2073,11 @@ class PreciseNumber { // implements Cloneable {
         dc1[i] = dc1[i].multiply(dc1[i]);
       }
     } else {
-      for (i = 0; i < n; i++) {
-        d1[i] = a[i];
-        d2[i] = b[i];
-      }
+      System.arraycopy(a, 0, d1, 0, n);
+      System.arraycopy(b, 0, d2, 0, n);
 
-      for (i = n; i < n2; i++) {
-        d1[i] = 0.0;
-        d2[i] = 0.0;
-      }
+      System.arraycopy(new double[n2], 0, d1, n, n2);
+      System.arraycopy(new double[n2], 0, d2, n, n2);
 
       mpfftrc(1, m2, n2, d1, dc1);
       mpfftrc(1, m2, n2, d2, dc2);

@@ -5,26 +5,29 @@ import org.scalatest.{FlatSpec, Matchers}
 class MoneySpecs extends FlatSpec with Matchers {
 
   "dummy" should "pass" in {
-    val pivot = new PreciseNumber("0.01")
+    val pivot = new PreciseNumber("0.1")
     //val divident = Money(new PreciseNumber("100"), "CZK")
     
-    var m = Money(new PreciseNumber("0"), "CZK")
-    var n = Money(new PreciseNumber("100"), "CZK")
+    var m = Money(new PreciseNumber("100"), "CZK")
+    //var n = Money(new PreciseNumber("100"), "CZK")
     
     
-    (1 to 100).foreach(x => {
-      m += Money(pivot, "CZK")
+    //(1 to 100).foreach(x => { m += Money(pivot, "CZK") })
+
+    (1 to 1000).foreach(x => {
+      //m += Money(pivot, "CZK")
+      m -= Money(pivot, "CZK")
     })
 
-    (1 to 100).foreach(x => {
-      n -= Money(pivot, "CZK")
-      //n += Money(pivot, "CZK")
-    })
+  //  (1 to 1000).foreach(x => {
+//      m += Money(pivot, "CZK")
+      //m -= Money(pivot, "CZK")
+    //})
 
     //val k = Money(pivot, "CZK") * Money(new PreciseNumber("1000000"), "CZK")
 
-    println(s"100 times add 1       --> ${m}")
-    println(s"100 times substract 1 --> ${n}")
+    println(s"check       --> ${m}")
+    //println(s"100 times substract 1 --> ${n}")
     //println(s"1 time multiply by 1000000 --> ${k}")
     //println(s"1000000 divided by 1000000 --> ${divident / divident}")
     //println(s"1000000 divided by 1000000 --> ${divident / divident}")
