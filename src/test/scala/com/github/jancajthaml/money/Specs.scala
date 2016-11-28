@@ -22,27 +22,27 @@ class MoneySpecs extends FlatSpec with Matchers {
     1 should === (1)
   }
 
-  it should "perform addition         1 + 1 = 2 " in {
-    var l = Money(new PreciseNumber("1"), "CZK")
-    var r = Money(new PreciseNumber("1"), "CZK")
-    (l + r) should === (Money(new PreciseNumber("2"), "CZK"))
+  it should "perform addition         3 + 5 = 8 " in {
+    var l = Money(new PreciseNumber("3"), "CZK")
+    var r = Money(new PreciseNumber("5"), "CZK")
+    (l + r) should === (Money(new PreciseNumber("8"), "CZK"))
   }
 
-  it should "perform substraction     2 - 1 = 1" in {
-    var l = Money(new PreciseNumber("2"), "CZK")
-    var r = Money(new PreciseNumber("1"), "CZK")
-    (l - r) should === (Money(new PreciseNumber("1"), "CZK"))
+  it should "perform substraction     5 - 3 = 2" in {
+    var l = Money(new PreciseNumber("5"), "CZK")
+    var r = Money(new PreciseNumber("3"), "CZK")
+    (l - r) should === (Money(new PreciseNumber("2"), "CZK"))
   }
 
-  it should "perform multiplication   2 * 2 = 4" in {
-    var l = Money(new PreciseNumber("2"), "CZK")
+  it should "perform multiplication   3 * 0.5 = 1.5" in {
+    var l = Money(new PreciseNumber("3"), "CZK")
+    var r = Money(new PreciseNumber("0.5"), "CZK")
+    (l * r) should === (Money(new PreciseNumber("1.5"), "CZK"))
+  }
+
+  it should "perform division         6 / 2 = 2" in {
+    var l = Money(new PreciseNumber("6"), "CZK")
     var r = Money(new PreciseNumber("2"), "CZK")
-    (l * r) should === (Money(new PreciseNumber("4"), "CZK"))
-  }
-
-  it should "perform division         4 / 2 = 2" in {
-    var l = Money(new PreciseNumber("4"), "CZK")
-    var r = Money(new PreciseNumber("2"), "CZK")
-    (l / r) should === (Money(new PreciseNumber("2"), "CZK"))
+    (l / r) should === (Money(new PreciseNumber("3"), "CZK"))
   }
 }

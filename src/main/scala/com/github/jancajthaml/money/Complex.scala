@@ -1,6 +1,6 @@
 package com.github.jancajthaml.money
 
-class Complex(private var re: Double, private var im: Double) extends Number with Cloneable {
+class Complex(private var re: Double, private var im: Double) extends Number { // with Cloneable {
 
   def set(re: Double, im: Double) {
     this.re = re
@@ -37,7 +37,7 @@ class Complex(private var re: Double, private var im: Double) extends Number wit
   }
 
   // TODO/FIXME delete and remove Clonable interface
-  override def clone(): AnyRef = new Complex(re, im)
+  //override def clone(): AnyRef = new Complex(re, im)
 
   override def hashCode(): Int = (new java.lang.Double(re / 2 + im / 2)).hashCode
 
