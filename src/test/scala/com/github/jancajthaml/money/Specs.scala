@@ -6,31 +6,27 @@ class MoneySpecs extends FlatSpec with Matchers {
 
   "dummy" should "pass" in {
     val pivot = new PreciseNumber("0.1")
-    //val divident = Money(new PreciseNumber("100"), "CZK")
-    
+
     var m = Money(new PreciseNumber("100"), "CZK")
-    //var n = Money(new PreciseNumber("100"), "CZK")
-    
-    
-    //(1 to 100).foreach(x => { m += Money(pivot, "CZK") })
 
     (1 to 1000).foreach(x => {
-      //m += Money(pivot, "CZK")
       m -= Money(pivot, "CZK")
     })
 
-  //  (1 to 1000).foreach(x => {
-//      m += Money(pivot, "CZK")
-      //m -= Money(pivot, "CZK")
-    //})
+    println(s"check       --> ${m}")
 
-    //val k = Money(pivot, "CZK") * Money(new PreciseNumber("1000000"), "CZK")
+    1 should === (1)
+  }
+
+  "dummy" should "aliasing boundaries" in {
+    var m = Money(new PreciseNumber("0"), "CZK")
+
+    m += Money(new PreciseNumber("0." + ("0" * 200) + "1"), "CZK")
+    m += Money(new PreciseNumber("1" + ("0" * 200)), "CZK")
+
+    m *= Money(new PreciseNumber("2"), "CZK");
 
     println(s"check       --> ${m}")
-    //println(s"100 times substract 1 --> ${n}")
-    //println(s"1 time multiply by 1000000 --> ${k}")
-    //println(s"1000000 divided by 1000000 --> ${divident / divident}")
-    //println(s"1000000 divided by 1000000 --> ${divident / divident}")
 
     1 should === (1)
   }

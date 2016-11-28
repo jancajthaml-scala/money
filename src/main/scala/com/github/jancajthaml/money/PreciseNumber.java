@@ -18,7 +18,7 @@ class PreciseNumber {
   static Complex[] uu2 = null;
 
   static {
-    setMaximumPrecision(1000);
+    setMaximumPrecision(Integer.MAX_VALUE);
   }
 
   public static final void setMaximumPrecision(int p) {
@@ -111,7 +111,7 @@ class PreciseNumber {
 
     if (maxnw > 0) {
       mantissa = new double[maxnw];
-      _eq(in , this, nw);
+      _eq(in, this, nw);
     } else {
       exponent = in .exponent;
       sign = in.sign;
@@ -1393,11 +1393,9 @@ class PreciseNumber {
     nn = (na != 0) ? ((int) sk1.mantissa[0]) : 0;
     ca = String.valueOf(nn).toCharArray();
 
-    System.out.println("underlying "+ new String(ca));
-
     b[18] = ca[0];
-    //b[19] = '.';
-    int ix = 19;
+    b[19] = '.';
+    int ix = 20;
 
     if (na == 0) {
       b[ix] = '\0';
@@ -1532,9 +1530,14 @@ class PreciseNumber {
   }
 
   public String toString() {
+    // INFO short and dirty way
+
     StringBuffer res = new StringBuffer();
     char az[] = new char[precision_digits];
-    int nd = Math.min(mpoutc(this, az, nw < 2 ? nw : 2), 20 + (nw < 2 ? nw : 2)) + 1;
+
+    int k = Math.min(nw, (int)(precision_digits / (Math.log(1.6777216e7) / 2.302585092994046) + 2.0));
+
+    int nd = Math.min(mpoutc(this, az, k), 20 + k) + 1;
 
     int i = 0;
 
@@ -1543,12 +1546,33 @@ class PreciseNumber {
     }
 
     String old = res.toString();
-    System.out.println(">>>" + old);
+    //System.out.println(">>>" + old);
     int xx = old.indexOf("x");
     String exponent = old.substring(old.indexOf("^") + 1, xx).trim();
     int ex = Integer.parseInt(exponent);
 
-    return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
+    if (ex != 0) {
+      if (ex < 0) {
+        // negative
+        return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
+      } else {
+        // positive
+
+        String number = old.substring(xx + 1).trim().replaceAll("\\.", "");
+
+        if (ex > number.length()) {
+          return number;
+        } else {
+          return number.substring(0, ex) + "." + number.substring(ex);
+        }
+        
+      }
+    } else {
+      return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
+    }
+    //(ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "")
+
+    //return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
   }
 
   static void fromString(char a[], int n, PreciseNumber b, int lnw) {
