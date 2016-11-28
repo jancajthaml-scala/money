@@ -6,6 +6,7 @@ class MoneySpecs extends FlatSpec with Matchers {
 
   "dummy" should "pass" in {
     val pivot = new PreciseNumber("0.000001")
+    val divident = Money(new PreciseNumber("1000000"), "CZK")
     
     var m = Money(new PreciseNumber("0"), "CZK")
     var k = Money(pivot, "CZK")
@@ -18,6 +19,7 @@ class MoneySpecs extends FlatSpec with Matchers {
 
     println(s"1000000 times add 1 --> ${m}")
     println(s"1 time multiply by 1000000 --> ${k}")
+    println(s"1000000 divided by 1000000 --> ${divident / divident}")
 
     1 should === (1)
   }
