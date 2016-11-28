@@ -1289,6 +1289,7 @@ class PreciseNumber {
   }
 
   private static void _sub(PreciseNumber a, PreciseNumber b, PreciseNumber c, int lnw) {
+    // TODO/FIXME try to solve subtraction with negative addition
     PreciseNumber bb = new PreciseNumber(0, false);
 
     bb.sign = !b.sign;

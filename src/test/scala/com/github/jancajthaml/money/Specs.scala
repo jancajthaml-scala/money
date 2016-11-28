@@ -4,16 +4,22 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class MoneySpecs extends FlatSpec with Matchers {
 
-  "dummy" should "pass" in {
-    val pivot = new PreciseNumber("0.1")
+  "dummy" should "produce same result" in {
+    val pos_pivot = new PreciseNumber("0.1")
+    val neg_pivot = new PreciseNumber("-0.1")
 
     var m = Money(new PreciseNumber("100"), "CZK")
+    var n = Money(new PreciseNumber("100"), "CZK")
 
     (1 to 1000).foreach(x => {
-      m -= Money(pivot, "CZK")
+      m -= Money(pos_pivot, "CZK")
+      n += Money(neg_pivot, "CZK")
     })
 
-    println(s"check       --> ${m}")
+    println(s"check subtraction   --> ${m}")
+    println(s"check addition      --> ${n}")
+
+    println(s"check equality      --> calculated:${n == m} referenced:${Money(new PreciseNumber("0"), "CZK") == n}")
 
     1 should === (1)
   }
