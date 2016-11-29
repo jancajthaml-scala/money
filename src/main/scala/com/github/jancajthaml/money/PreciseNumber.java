@@ -18,7 +18,8 @@ class PreciseNumber {
   static Complex[] uu2 = null;
 
   static {
-    setMaximumPrecision(Integer.MAX_VALUE);
+    setMaximumPrecision(100);
+    //setMaximumPrecision(1000);
   }
 
   public static final void setMaximumPrecision(int p) {
@@ -174,9 +175,11 @@ class PreciseNumber {
     return compare(this, (PreciseNumber) o, nw);
   }
 
+  /*
   public static int getPrecisionInDigits() {
     return precision_digits;
-  }
+  }*/
+
 
   private static void _add(PreciseNumber a, PreciseNumber b, PreciseNumber c, int lnw) {
     int i = 0;
@@ -192,16 +195,17 @@ class PreciseNumber {
     int ixd = 0;
 
     if (ish >= 0) {
+      //System.out.println("C-A");
       int m1 = na < ish ? na : ish;
-      int m2 = Math.min(na, nb + ish);
+      int m2 = na < (nb + ish) ? na : (nb + ish);
       int m3 = na;
-      int m4 = Math.min(na < ish ? ish : na, lnw + 1);
-      int m5 = Math.min(Math.max(na, nb + ish), lnw + 1);
+      int m4 = na < ish ? (ish < (lnw + 1) ? ish : (lnw + 1)) : (na < (lnw + 1) ? na : (lnw + 1));
+      int m5 = na > (nb + ish) ? (na < (lnw + 1) ? na : (lnw + 1)) : ((nb + ish) < (lnw + 1) ? (nb + ish) : (lnw + 1)); 
       d[0] = 0;
       d[1] = 0;
 
       if (a.sign == b.sign) {
-        //System.out.println("same signs");
+        //System.out.println("same "+ a.sign + " " + b.sign);
         if (m1 > 0) {
           System.arraycopy(a.mantissa, 0, d, 2, m1);
         }
@@ -218,6 +222,9 @@ class PreciseNumber {
           System.arraycopy(b.mantissa, m4 - ish, d, m4 + 2, m5 - m4);
         }
       } else {
+        // TODO/FIXME problem here
+        //System.out.println("different "+ a.sign + " " + b.sign);
+        //System.out.println("C-A-2");
         if (m1 > 0) {
           System.arraycopy(a.mantissa, 0, d, 2, m1);
         }
@@ -240,6 +247,7 @@ class PreciseNumber {
       d[nd + 2] = 0.0;
       d[nd + 3] = 0.0;
     } else {
+      //System.out.println("C-B");
       int m1 = nb < -ish ? nb : -ish;
       int m2 = nb < (na + -ish) ? nb : (na - ish);
       int m3 = nb;
@@ -249,26 +257,24 @@ class PreciseNumber {
       d[1] = 0;
 
       if (a.sign == b.sign) {
-        // TODO/FIXME System.arraycopy
-        for (i = 0; i < m1; i++) {
-          d[i + 2] = b.mantissa[i];
+        //System.out.println("C-B-1");
+        if (m1 > 0) {
+          System.arraycopy(b.mantissa, 0, d, 2, m1);
         }
         for (i = m1; i < m2; i++) {
           d[i + 2] = a.mantissa[i + ish] + b.mantissa[i];
         }
-        // TODO/FIXME System.arraycopy
-        for (i = m2; i < m3; i++) {
-          d[i + 2] = b.mantissa[i];
+        if (m3 > m2) {
+          System.arraycopy(b.mantissa, m2, d, m2 + 2, m3 - m2);
         }
-        // TODO/FIXME System.arraycopy
-        for (i = m3; i < m4; i++) {
-          d[i + 2] = 0.0;
+        if (m4 > m3) {
+          System.arraycopy(new double[m4], 0, d, m3 + 2, m4 - m3);
         }
-        // TODO/FIXME System.arraycopy
-        for (i = m4; i < m5; i++) {
-          d[i + 2] = a.mantissa[i + ish];
+        if (m5 > m4) {
+          System.arraycopy(a.mantissa, m4 + ish, d, m4 + 2, m5 - m4);
         }
       } else {
+        //System.out.println("C-B-2");
         for (i = 0; i < m1; i++) {
           d[i + 2] = -b.mantissa[i];
         }
@@ -278,13 +284,11 @@ class PreciseNumber {
         for (i = m2; i < m3; i++) {
           d[i + 2] = -b.mantissa[i];
         }
-        // TODO/FIXME System.arraycopy
-        for (i = m3; i < m4; i++) {
-          d[i + 2] = 0.0;
+        if (m4 > m3) {
+          System.arraycopy(new double[m4], 0, d, m3 + 2, m4 - m3);
         }
-        // TODO/FIXME System.arraycopy
-        for (i = m4; i < m5; i++) {
-          d[i + 2] = a.mantissa[i + ish];
+        if (m5 > m4) {
+          System.arraycopy(a.mantissa, m4 + ish, d, m4 + 2, m5 - m4);
         }
       }
 
@@ -1038,7 +1042,7 @@ class PreciseNumber {
     double t3 = 0.0;
     int i = 0;
     boolean ia = d[0] >= 0;
-    int na = Math.min((int)(d[0] < 0 ? -d[0] : d[0]), lnw);
+    int na = (int)(d[0] < 0 ? (-d[0] < lnw ? -d[0] : lnw) : (d[0] < lnw ? d[0] : lnw));
 
     if (na == 0) {
       a.number_words = 0;
@@ -1078,15 +1082,15 @@ class PreciseNumber {
         }
       } else if (d[1] > 0.0) {
         for (i = n4 - 2; i >= 1; i--) {
-          a.mantissa[i - 1] = (float)(d[i]);
+          a.mantissa[i - 1] = d[i];
         }
 
-        na = Math.min(na + 1, lnw);
+        na = (na + 1) < lnw ? (na + 1) : lnw;
         a2++;
         needToNormalize = false;
       } else {
         for (i = 2; i < n4; i++) {
-          a.mantissa[i - 2] = (float)(d[i]);
+          a.mantissa[i - 2] = d[i];
         }
         needToNormalize = false;
       }
@@ -1217,7 +1221,7 @@ class PreciseNumber {
       }
 
       a2 -= k;
-      na -= k > 2 ? (k - 2) : 0;
+      na -= (k > 2) ? (k - 2) : 0;
     }
 
     if (na == lnw) {
@@ -1227,23 +1231,22 @@ class PreciseNumber {
 
       boolean no_stop = true;
 
-      for (i = na - 1; i >= 0; i--) {
+      for (i = na - 1; no_stop && i >= 0; i--) {
         if (a.mantissa[i] < 16777216f) {
           no_stop = false;
-          // TODO/FIXME cannot be converted into scala
-          break;
-        }
-        a.mantissa[i] -= 16777216f;
-
-        if (i == 0) {
-          a.exponent++;
         } else {
-          a.mantissa[i - 1]++;
+          a.mantissa[i] -= 16777216f;
+
+          if (i == 0) {
+            a.exponent++;
+          } else {
+            a.mantissa[i - 1]++;
+          }
         }
       }
 
       if (no_stop) {
-        a.mantissa[0] = (float) a.exponent;
+        a.mantissa[0] = a.exponent;
         na = 1;
         a2++;
       }
@@ -1253,11 +1256,9 @@ class PreciseNumber {
       if (a.mantissa[na - 1] == 0) {
         boolean allZero = true;
 
-        for (i = na - 1; i >= 0; i--) {
+        for (i = na - 1; allZero && i >= 0; i--) {
           if (a.mantissa[i] != 0) {
             allZero = false;
-            // TODO/FIXME cannot be converted into scala
-            break;
           }
         }
         if (allZero) {
@@ -1266,7 +1267,7 @@ class PreciseNumber {
           a.exponent = 0;
           return;
         }
-        na = i + 1;
+        na = i + 2;
       }
     } catch (ArrayIndexOutOfBoundsException e) {}
 
@@ -1347,7 +1348,7 @@ class PreciseNumber {
 
       t1 = 7.2247198959 * a.exponent + (Math.log(aa) / 2.302585092994046);
 
-      nx = (t1 >= 0.0) ? ((int) t1) : ((int)(t1 - 1.0));
+      nx =(int)((t1 >= 0.0) ? t1 : (t1 - 1.0));
 
       mpnpwr(f, nx, sk0, lnw);
       mpdiv(a, sk0, sk1, lnw);
@@ -1357,12 +1358,10 @@ class PreciseNumber {
       while (no_stop) {
         if (sk1.exponent < 0) {
           nx = nx - 1;
-
           muld(sk1, new Chunk(10.0, 0), sk0, lnw);
           _eq(sk0, sk1, lnw);
         } else if (sk1.mantissa[0] >= 10) {
           nx++;
-
           mpdivd(sk1, new Chunk(10.0, 0), sk0, lnw);
           _eq(sk0, sk1, lnw);
         } else {
@@ -1469,8 +1468,9 @@ class PreciseNumber {
           loopbreak = true;
           // TODO/FIXME cannot be converted into scala
           break;
+        } else {
+          b[i] = '\0';
         }
-        b[i] = '\0';
       }
 
       if (!loopbreak) {
@@ -1485,8 +1485,9 @@ class PreciseNumber {
           skip = true;
           // TODO/FIXME cannot be converted into scala
           break;
+        } else {
+          b[i] = '\0';
         }
-        b[i] = '\0';
       }
 
       if (!skip) {
@@ -1552,6 +1553,7 @@ class PreciseNumber {
     String exponent = old.substring(old.indexOf("^") + 1, xx).trim();
     int ex = Integer.parseInt(exponent);
 
+    /*
     if (ex != 0) {
       if (ex < 0) {
         // negative
@@ -1571,9 +1573,10 @@ class PreciseNumber {
     } else {
       return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
     }
+    */
     //(ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "")
 
-    //return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
+    return old.substring(xx + 1).trim() + (ex != 0 ? ("e" + ((ex < 0) ? "" : "+") + exponent) : "");
   }
 
   static void fromString(char a[], int n, PreciseNumber b, int lnw) {
@@ -1729,6 +1732,8 @@ class PreciseNumber {
     mpnpwr(f, nn, sk0, lnw);
     mul(sk2, sk0, sk1, lnw);
     _eq(sk1, b, lnw);
+
+    //round(b, nws);
   }
 
   static void mpfftcr(int is, int m, int n, Complex x[], double y[]) {
