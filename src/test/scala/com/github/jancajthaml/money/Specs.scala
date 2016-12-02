@@ -35,11 +35,10 @@ class MoneySpecs extends FlatSpec with Matchers {
   }
 */
   "Real" should "perform 100 + 123 = 223" in {
-    val left = Real("1" + ("0" * 100000) + "1")
-    val right = Real("2" + ("0" * 100000) + "1")
+    val left = Real("1" + ("0" * 100) + "1")
+    val right = Real("2" + ("0" * 100) + "1")
     val result = left + right
-    println(result.toString())
-    result.toString should === ("3" + ("0" * 100000) + "2")
+    result.toString should === ("3" + ("0" * 100) + "2")
   }
 
   it should "perform 100 + 23 = 123" in {
@@ -63,7 +62,7 @@ class MoneySpecs extends FlatSpec with Matchers {
     result.toString should === ("1")
   }
   it should "perform 2 - 0.025 = 1.975" in {
-    val left = Real("2.000")
+    val left = Real("2")
     val right = Real("0.025")
     val result = left - right
     result.toString should === ("1.975")

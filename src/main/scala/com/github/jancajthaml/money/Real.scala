@@ -7,46 +7,57 @@ import Real._
 object Real {
 
   def loads(x: Real, str: String) {
-    var buffer = str.toCharArray()
 
-    if (buffer(0) == '-') {
-      buffer = buffer.drop(1)
-      x.signum = true
-    }
+    var buffer = Array.empty[Int]
+    var leftDrop = -1
+    var leftScan = true
+    var rightDrop = -1
+    var rightScan = true
+    // TODO/FIXME foreach zipWithIndex instead of while
 
-    // TODO/FIXME merge this
-    var decimal = buffer.indexOf('.')
+    var decimal = str.length
 
-    if (decimal > -1) {
-      // TODO/FIXME with this 
-      buffer = buffer.filterNot(_ == '.')
-    } else {
-      decimal = buffer.size
-    }
-
-    // TODO/FIXME remove mutability
     var i = 0
 
-    while ((i < buffer.size - 1) && buffer(i) == '0') {
+    while (i < str.length) {
+      val c = str(i)
+      if (i == 0 && c == '-') {
+        x.signum = true
+      } else if (c == '0') {
+        if (leftScan) {
+          leftDrop = i
+        } else if (rightScan) {
+          rightDrop = buffer.size
+          buffer :+= 0
+          rightScan = false
+        } else {
+          buffer :+= 0
+        }
+      } else if (c == '.') {
+        decimal = buffer.size
+        leftScan = false
+        rightDrop = -1
+      } else {
+        buffer :+= (c.toInt - 48)
+        leftScan = false
+        rightScan = true
+        rightDrop = -1
+      }
       i += 1
     }
 
-    var nL = buffer.size
+    x.exponent = decimal - 1
 
-    if (i == nL) {
-      x.digits :+= 0
+    if (x.exponent < 0 && rightDrop > -1) {
+      x.digits = buffer.take(rightDrop).drop(-x.exponent)
+      x.exponent -= 1
+    } else if (x.exponent < 0) {
+      x.digits = buffer.drop(-x.exponent)
+      x.exponent -= 1
+    } else if (rightDrop > -1) {
+      x.digits = buffer.take(rightDrop)
     } else {
-      nL -= 1
-      while ((nL < buffer.size - 1) && buffer(nL) == '0') {
-        nL -= 1
-      }
-
-      x.exponent = decimal - i - 1
-
-      while (i <= nL) {
-        x.digits :+= buffer(i).asDigit
-        i += 1
-      }
+      x.digits = buffer
     }
   }
 
@@ -113,6 +124,7 @@ object Real {
       if (xc(0) == 0 || yc(0) == 0) {
         Real("0")
       } else {
+        // TODO/FIXME problem with different array lengths
 
         // Determine which is the bigger number.
         // Prepend zeros to equalise exponents.
@@ -295,7 +307,7 @@ object Real {
   }
 }
 
-// TODO/FIXME add cloneable
+// TODO/FIXME add Cloneable
 case class Real(str: String) {
 
   val precision = 64
