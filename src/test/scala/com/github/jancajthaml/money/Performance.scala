@@ -1,5 +1,5 @@
 package com.github.jancajthaml.money
-
+/*
 import org.scalameter.api.{Measurer, Bench, Gen, exec}
 
 object RegressionResources extends Bench.OfflineReport {
@@ -44,3 +44,5 @@ object RegressionPerformance extends Bench.OfflineReport {
   }
 
 }
+
+*/

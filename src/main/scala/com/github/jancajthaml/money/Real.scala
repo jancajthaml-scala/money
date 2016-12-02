@@ -7,44 +7,36 @@ import Real._
 object Real {
 
   def loads(x: Real, str: String) {
-
     var buffer = Array.empty[Int]
-    var leftDrop = -1
-    var leftScan = true
+
+    var leftSkip = false
     var rightDrop = -1
     var rightScan = true
-    // TODO/FIXME foreach zipWithIndex instead of while
 
     var decimal = str.length
 
-    var i = 0
-
-    while (i < str.length) {
-      val c = str(i)
-      if (i == 0 && c == '-') {
+    str.foreach(c => {
+      if (c == '-') {
         x.signum = true
       } else if (c == '0') {
-        if (leftScan) {
-          leftDrop = i
-        } else if (rightScan) {
+        if (leftSkip && rightScan) {
           rightDrop = buffer.size
           buffer :+= 0
           rightScan = false
-        } else {
+        } else if (leftSkip){
           buffer :+= 0
         }
       } else if (c == '.') {
         decimal = buffer.size
-        leftScan = false
+        leftSkip = true
         rightDrop = -1
       } else {
         buffer :+= (c.toInt - 48)
-        leftScan = false
+        leftSkip = true
         rightScan = true
         rightDrop = -1
       }
-      i += 1
-    }
+    })
 
     x.exponent = decimal - 1
 
@@ -62,6 +54,9 @@ object Real {
   }
 
   def dumps(x: Real, precision: Int): String = {
+    // TODO/FIXME really optimise
+    // TODO/FIXME construct string manually without mkString (multiple O(n))
+
     var buffer = x.digits
     var dp = precision
 
@@ -219,7 +214,7 @@ object Real {
         }
 
         if (xc(0) == 0) {
-          l.signum = false  // n - n = +0
+          l.signum = false
           l.digits = Array(0)
           l.exponent = ye
         } else {
@@ -307,8 +302,7 @@ object Real {
   }
 }
 
-// TODO/FIXME add Cloneable
-case class Real(str: String) {
+case class Real(str: String) extends Cloneable {
 
   val precision = 64
   var signum = false
@@ -319,9 +313,9 @@ case class Real(str: String) {
 
   override def toString(): String = dumps(this, precision - 1)
 
-  def +  (x: Real) = _add(Real(toString()), x)
-  def += (x: Real) = _add(this, x)
+  def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
+  def += (r: Real) = _add(this, r)
 
-  def -  (x: Real) = _sub(Real(toString()), x)
-  def -= (x: Real) = _sub(this, x)
+  def -  (r: Real) = _sub(super.clone().asInstanceOf[Real], r)
+  def -= (r: Real) = _sub(this, r)
 }
