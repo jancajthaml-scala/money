@@ -10,96 +10,57 @@ object Real {
   private val prefixP = Seq('0' + '.')
 
   def loads(x: Real, str: String) {
-    var buffer = Array.empty[Int]
-
-    // TODO/FIXME exponent should never be greater than size of buffer
-
-    var leftSkip = false
-    var rightDrop = -1
-    var rightScan = true
-    var leftDecay = 0
-    var leftDecayStop = false
-    var decimal = str.length
+    var leftFound = false
     var decimalFound = false
+    var takeRight = -1
 
     str.foreach(c => {
       if (c == '-') {
         x.signum = true
       } else if (c == '0') {
-        if (!leftDecayStop) {
-          leftDecay += 1
+        if (!decimalFound) {
+          // TODO/FIXME temp
+          takeRight = x.digits.size
         }
-        if (leftSkip && rightScan) {
-          rightDrop = buffer.size
-          buffer :+= 0
-          rightScan = false
-        } else if (leftSkip){
-          buffer :+= 0
+        if (leftFound) {
+          x.digits :+= 0
+        } else if (decimalFound) {
+          x.exponent -= 1
         }
       } else if (c == '.') {
-        decimal = buffer.size
+        x.exponent = x.digits.size - 1
         decimalFound = true
-        leftSkip = true
-        rightDrop = -1
       } else {
-        leftDecayStop = true
-        buffer :+= (c.toInt - 48)
-        leftSkip = true
-        rightScan = true
-        rightDrop = -1
+        x.digits :+= (c - 48)
+        leftFound = true
+        takeRight = x.digits.size
       }
     })
 
-    if (x.exponent < 1 && rightDrop > -1) {
-      x.digits = buffer.take(rightDrop).drop(-x.exponent)
-      x.exponent = decimal - 1
-    } else if (x.exponent < 1) {
-      if (decimalFound) {
-        x.digits = buffer.drop(leftDecay - 1)
-        x.exponent = decimal - 1
-      } else {
-        x.digits = buffer
-        if (leftDecay == 0) {
-          x.exponent = decimal - 1
-        } else if (decimalFound) {
-          x.exponent = -leftDecay
-        }
-      }
-      if (leftDecay == 0 || !decimalFound) {
-        x.exponent = decimal - 1
-      } else if (decimalFound) {
-        x.exponent = -leftDecay
-      }
-    } else if (rightDrop > -1) {
-      x.digits = buffer.take(rightDrop)
-      x.exponent = decimal - 1
-    } else {
-      x.digits = buffer
-      x.exponent = decimal - 1
-    }
+    // TODO/FIXME temp
+    //if (!decimalFound) {
+      //x.exponent += x.digits.size - takeRight
+    //}
+
+    //println(s">>> ${str} ... ${x.exponent} ... ${x.digits.toSeq} ... ${takeRight} ... ${decimalFound}")
+    x.digits = x.digits.take(takeRight)
   }
 
   def dumps(x: Real, precision: Int): String = {
     // TODO/FIXME string concat definitelly slower than buffer, try
-
-    if (x.exponent < 0) {
+    if (x.digits.isEmpty) {
+      if (x.signum) "-0" else "0"
+    } else if (x.exponent < 0) {
       // TODO/FIXME try reduce if faster
       val dump = (Array.fill[Int](-x.exponent - 1)(0) ++ x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
       (if (x.signum) "-0." else "0.") + dump
     } else {
       // TODO/FIXME try reduce if faster
-      val dump = x.digits.foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
+      val dump = (x.digits /*++ Array.fill[Int](x.exponent)(0)*/).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
       val decimal = x.exponent + 1
 
-      if (decimal < dump.size) {
-        if (x.signum) {
-          "-" + dump.take(decimal) + "." + dump.drop(decimal)
-        } else {
-          dump.take(decimal) + "." + dump.drop(decimal)
-        }
-      } else {
-        if (x.signum) "-" + dump else dump
-      }
+      (if (x.signum) "-" else "") +
+      (if (decimal < x.digits.size) (dump.take(decimal) + "." + dump.drop(decimal)) else dump)
     }
   }
 
@@ -311,8 +272,10 @@ case class Real(str: String) extends Cloneable {
 
   override def toString(): String = dumps(this, precision - 1)
 
-  def repr(): String =
-    if (digits.size > 0) s"${digits(0)}.${digits.drop(1).mkString}E${exponent}" else "0"
+  def repr(): String = {
+    (if (signum) "-" else "") +
+    (if (digits.size > 0) s"${digits(0)}.${digits.drop(1).mkString}E${exponent}" else "0")
+  }
 
   def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
   def += (r: Real) = _add(this, r)
