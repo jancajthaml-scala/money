@@ -2,6 +2,8 @@ package com.github.jancajthaml.money
 
 import Real._
 
+//import sun.misc.Unsafe
+
 //type number = (Boolean, Array[Int], Int)
 
 object Real {
@@ -9,17 +11,17 @@ object Real {
   private val prefixN = Seq('-', '0', '.')
   private val prefixP = Seq('0' + '.')
 
-  def loads(x: Real, str: String) = {
+  def loads(x: Real) = {
     var i = 0
 
-    if (str(0) == '-') {
+    if (x.digits.charAt(0) == '-') {
       i += 1
       x.signum = true
     }
 
-    // TODO/FIXME calculate take and takeright, do not use left and right immutables ... perf
-    var left = Array.empty[Int]
-    var right = Array.empty[Int]
+    // TODO/FIXME rework that pointers works over original buffer
+    var left = ""
+    var right = ""
 
     var decimal = 0
 
@@ -30,60 +32,66 @@ object Real {
     var leftPass = 0
     var rightPass = 0
 
-    var goOn = true
-
-    while (goOn && i > -1 && i < str.length) {
-      val c = str(i)
-      if (!decimalFound) {
-        i += 1
-        if (c == '.') {
-          decimal = left.size
-          decimalFound = true
-          if (i == str.length - 1) {
-            goOn = false
-          } else {
-            i = str.length - 1
-          }
-        } else if (c == '0' && leftOffsetFound) {
-          left :+= 0
-          leftPass += 1
-        } else if (c != '0') {
-          left :+= (c - 48)
-          leftOffsetFound = true
-        }
-      } else {
-        if (c == '.') {
-          goOn = false
-        } else if (c == '0' && rightOffsetFound) {
-          right +:= 0
-          rightPass += 1
-        } else if (c != '0') {
-          right +:= (c - 48)
-          rightOffsetFound = true
-        }
-        i -= 1
+    while (!decimalFound && i < x.digits.length - 1) {
+      val c = x.digits.charAt(i)
+      i += 1
+      if (c == '.') {
+        decimal = left.length
+        decimalFound = true
+        i = x.digits.length - 1
+      } else if (c == '0' && leftOffsetFound) {
+        left += "0"
+        leftPass += 1
+      } else if (c != '0') {
+        left += c
+        leftOffsetFound = true
       }
     }
-  }
 
-  def dumps(x: Real, precision: Int): String = {
-    if (x.digits.isEmpty) {
-      if (x.signum) "-0" else "0"
-    } else if (x.exponent > 0 && x.exponent > x.digits.size) {
-      val dump = (x.digits ++ Array.fill[Int](x.exponent - 1)(0) ).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
-      (if (x.signum) "-" else "") + dump
-    } else if (x.exponent < 0 && x.exponent < x.digits.size) {
-      val dump = (Array.fill[Int](-x.exponent - 1)(0) ++ x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
-      (if (x.signum) "-0." else "0.") + dump
+    while (i > -1) {
+      val c = x.digits.charAt(i)
+      if (c == '.') {
+        i = 0
+      } else if (c == '0' && rightOffsetFound) {
+        right = "0" + right
+        rightPass += 1
+      } else if (c != '0') {
+        right = c + right
+        rightOffsetFound = true
+      }
+      i -= 1
+    }
+    if (right.length == 0) {
+      x.exponent = leftPass + 1
+      x.digits = left.substring(0, left.length - leftPass)
+    } else if (left.length == 0) {
+      x.exponent = -rightPass - 1
+      x.digits = right.substring(right.length - rightPass, right.length)
     } else {
-      // INFO in between digits
-      val dump = (x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
-      val decimal = x.exponent + 1
-      (if (x.signum) "-" else "") +
-      (if (decimal < x.digits.size) (dump.take(decimal) + "." + dump.drop(decimal)) else dump)
+      val buffer = left + right
+      x.exponent = if (buffer.length > 0) decimal - 1 else 0
+      x.digits = buffer
     }
   }
 
+  def dumps(x: Real): String = {
+    if (x.digits.isEmpty) {
+      if (x.signum) "-0" else "0"
+    } else if (x.exponent > 0 && x.exponent > x.digits.length) {
+      val dump = x.digits + ("0" * (x.exponent - 1))
+      (if (x.signum) "-" else "") + dump
+    } else if (x.exponent <= 0 && x.exponent < x.digits.length) {
+      val dump = ("0" * (-x.exponent - 1)) + x.digits
+      (if (x.signum) "-0." else "0.") + dump
+    } else {
+      val dump = x.digits
+      val decimal = x.exponent + 1
+      (if (x.signum) "-" else "") +
+      (if (decimal < x.digits.length) (dump.substring(0, decimal) + "." + dump.substring(dump.length - decimal, dump.length)) else dump)
+    }
+  }
+
+  /*
   private def _sub(l: Real, r: Real) = {
     // Signs differ?
     if (l.signum ^ r.signum) {
@@ -279,27 +287,23 @@ object Real {
     }
 
   }
+  */
 }
 
-case class Real(str: String) extends Cloneable {
+case class Real(var digits: String) extends Cloneable {
 
-  val precision = 64
   var signum = false
-  var digits = Array.empty[Int]
   var exponent = 0
 
-  loads(this, str)
+  loads(this)
 
-  override def toString(): String = dumps(this, precision - 1)
+  override def toString(): String = dumps(this)
 
-  def repr(): String = {
-    (if (signum) "-" else "") +
-    (if (digits.size > 0) s"${digits(0)}.${digits.drop(1).mkString}E${exponent}" else "0")
-  }
-
+  /*
   def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
   def += (r: Real) = _add(this, r)
 
   def -  (r: Real) = _sub(super.clone().asInstanceOf[Real], r)
   def -= (r: Real) = _sub(this, r)
+  */
 }
