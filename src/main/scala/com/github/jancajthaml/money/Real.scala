@@ -17,6 +17,7 @@ object Real {
       x.signum = true
     }
 
+    // TODO/FIXME calculate take and takeright, do not use left and right immutables ... perf
     var left = Array.empty[Int]
     var right = Array.empty[Int]
 
@@ -63,18 +64,6 @@ object Real {
         i -= 1
       }
     }
-
-    if (right.isEmpty) {
-      x.exponent = leftPass + 1
-      x.digits = left.take(left.size - leftPass)
-    } else if (left.isEmpty) {
-      x.exponent = -rightPass - 1
-      x.digits = right.takeRight(right.size - rightPass)
-    } else {
-      val buffer = left ++ right
-      x.exponent = if (buffer.size > 0) decimal - 1 else 0
-      x.digits = buffer
-    }
   }
 
   def dumps(x: Real, precision: Int): String = {
@@ -87,6 +76,7 @@ object Real {
       val dump = (Array.fill[Int](-x.exponent - 1)(0) ++ x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
       (if (x.signum) "-0." else "0.") + dump
     } else {
+      // INFO in between digits
       val dump = (x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
       val decimal = x.exponent + 1
       (if (x.signum) "-" else "") +
