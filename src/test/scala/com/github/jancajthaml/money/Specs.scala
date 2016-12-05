@@ -5,6 +5,12 @@ import org.scalatest.{FlatSpec, Matchers}
 class RealSpecs extends FlatSpec with Matchers {
 
   def cycle(x: String) = println(s"${x} --> ${Real(x).toString}")
+  def add(a: String, b: String) = { // TODO/FIXME
+    //val x = operation.split("\\+")
+    //val x = Set(a, b)
+    val operation = s"$a + $b"
+    println(s"${operation} --> ${Real(a) + Real(b)}")
+  }
 
   "Parsing" should "handle 1.0" in {
 
@@ -23,6 +29,11 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("-000010.01000")
     cycle("-1") // TODO/FIXME does not parse correctly
     cycle("-0") // TODO/FIXME does not parse correctly
+
+    add("1", "2")
+    add("000010.00000", "000000.01000")
+    
+    //add("000000.01000", "000010.00000") // TODO/FIXME bug here
 
     /*
     val ref1 = Real("1" + ("0" * 5) + "0.1")
