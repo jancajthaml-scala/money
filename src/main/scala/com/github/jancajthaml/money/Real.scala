@@ -2,6 +2,7 @@ package com.github.jancajthaml.money
 
 import Real._
 
+import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
 
 //type number = (Boolean, Array[Int], Int)
@@ -14,14 +15,13 @@ object Real {
   def loads(x: Real) = {
     var i = 0
 
-    if (x.digits.charAt(0) == '-') {
+    if (x.value.charAt(0) == '-') {
       i += 1
       x.signum = true
     }
 
-    // TODO/FIXME rework that pointers works over original buffer
-    var left = ""
-    var right = ""
+    var left = Buffer.empty[Char]
+    var right = Buffer.empty[Char]
 
     var decimal = 0
 
@@ -32,15 +32,15 @@ object Real {
     var leftPass = 0
     var rightPass = 0
 
-    while (!decimalFound && i < x.digits.length - 1) {
-      val c = x.digits.charAt(i)
+    while (!decimalFound && i < x.value.length) {
+      val c = x.value.charAt(i)
       i += 1
       if (c == '.') {
-        decimal = left.length
+        decimal = left.size
         decimalFound = true
-        i = x.digits.length - 1
-      } else if (c == '0' && leftOffsetFound) {
-        left += "0"
+        i = x.value.length - 1
+      } else if (leftOffsetFound && c == '0') {
+        left += '0'
         leftPass += 1
       } else if (c != '0') {
         left += c
@@ -48,46 +48,51 @@ object Real {
       }
     }
 
-    while (i > -1) {
-      val c = x.digits.charAt(i)
-      if (c == '.') {
-        i = 0
-      } else if (c == '0' && rightOffsetFound) {
-        right = "0" + right
-        rightPass += 1
-      } else if (c != '0') {
-        right = c + right
-        rightOffsetFound = true
+    if (decimalFound) {
+      while (i > -1) {
+        val c = x.value.charAt(i)
+        if (c == '.' || c == '-') {
+          i = 0
+        } else if (rightOffsetFound && c == '0') {
+          right += '0'
+          rightPass += 1
+        } else if (c != '0') {
+          right += c
+          rightOffsetFound = true
+        }
+        i -= 1
       }
-      i -= 1
     }
-    if (right.length == 0) {
+
+    if (right.isEmpty) {
       x.exponent = leftPass + 1
-      x.digits = left.substring(0, left.length - leftPass)
-    } else if (left.length == 0) {
+      x.digits = left.take(left.size - leftPass)
+    } else if (left.isEmpty) {
       x.exponent = -rightPass - 1
-      x.digits = right.substring(right.length - rightPass, right.length)
+      x.digits = right.take(right.size - rightPass).reverse
     } else {
-      val buffer = left + right
-      x.exponent = if (buffer.length > 0) decimal - 1 else 0
-      x.digits = buffer
+      left ++= right.reverse
+      x.exponent = if (left.isEmpty) 0 else decimal - 1
+      x.digits = left
     }
+
+    // TODO/FIXME inline don't use dumps here
+    x.value = dumps(x)
   }
 
   def dumps(x: Real): String = {
     if (x.digits.isEmpty) {
       if (x.signum) "-0" else "0"
-    } else if (x.exponent > 0 && x.exponent > x.digits.length) {
-      val dump = x.digits + ("0" * (x.exponent - 1))
+    } else if (x.exponent > 0 && x.exponent > x.digits.size) {
+      val dump = x.digits.mkString + ("0" * (x.exponent - 1))
       (if (x.signum) "-" else "") + dump
-    } else if (x.exponent <= 0 && x.exponent < x.digits.length) {
-      val dump = ("0" * (-x.exponent - 1)) + x.digits
+    } else if (x.exponent <= 0 && x.exponent < x.digits.size) {
+      val dump = ("0" * (-x.exponent - 1)) + x.digits.mkString
       (if (x.signum) "-0." else "0.") + dump
     } else {
-      val dump = x.digits
       val decimal = x.exponent + 1
       (if (x.signum) "-" else "") +
-      (if (decimal < x.digits.length) (dump.substring(0, decimal) + "." + dump.substring(dump.length - decimal, dump.length)) else dump)
+      (if (decimal < x.digits.size) (x.digits.take(decimal).mkString + "." + x.digits.drop(decimal).mkString) else x.digits.mkString)
     }
   }
 
@@ -290,14 +295,15 @@ object Real {
   */
 }
 
-case class Real(var digits: String) extends Cloneable {
+case class Real(var value: String) extends Cloneable {
 
   var signum = false
   var exponent = 0
+  var digits = Buffer.empty[Char]
 
   loads(this)
 
-  override def toString(): String = dumps(this)
+  override def toString(): String = value
 
   /*
   def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
