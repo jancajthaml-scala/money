@@ -9,56 +9,86 @@ object Real {
   private val prefixN = Seq('-', '0', '.')
   private val prefixP = Seq('0' + '.')
 
-  def loads(x: Real, str: String) {
-    var leftFound = false
+  def loads(x: Real, str: String) = {
+    var i = 0
+
+    if (str(0) == '-') {
+      i += 1
+      x.signum = true
+    }
+
+    var left = Array.empty[Int]
+    var right = Array.empty[Int]
+
+    var decimal = 0
+
     var decimalFound = false
-    var takeRight = -1
+    var leftOffsetFound = false
+    var rightOffsetFound = false
 
-    str.foreach(c => {
-      if (c == '-') {
-        x.signum = true
-      } else if (c == '0') {
-        if (!decimalFound) {
-          // TODO/FIXME temp
-          takeRight = x.digits.size
+    var leftPass = 0
+    var rightPass = 0
+
+    var goOn = true
+
+    while (goOn && i > -1 && i < str.length) {
+      val c = str(i)
+      if (!decimalFound) {
+        i += 1
+        if (c == '.') {
+          decimal = left.size
+          decimalFound = true
+          if (i == str.length - 1) {
+            goOn = false
+          } else {
+            i = str.length - 1
+          }
+        } else if (c == '0' && leftOffsetFound) {
+          left :+= 0
+          leftPass += 1
+        } else if (c != '0') {
+          left :+= (c - 48)
+          leftOffsetFound = true
         }
-        if (leftFound) {
-          x.digits :+= 0
-        } else if (decimalFound) {
-          x.exponent -= 1
-        }
-      } else if (c == '.') {
-        x.exponent = x.digits.size - 1
-        decimalFound = true
       } else {
-        x.digits :+= (c - 48)
-        leftFound = true
-        takeRight = x.digits.size
+        if (c == '.') {
+          goOn = false
+        } else if (c == '0' && rightOffsetFound) {
+          right +:= 0
+          rightPass += 1
+        } else if (c != '0') {
+          right +:= (c - 48)
+          rightOffsetFound = true
+        }
+        i -= 1
       }
-    })
+    }
 
-    // TODO/FIXME temp
-    //if (!decimalFound) {
-      //x.exponent += x.digits.size - takeRight
-    //}
-
-    //println(s">>> ${str} ... ${x.exponent} ... ${x.digits.toSeq} ... ${takeRight} ... ${decimalFound}")
-    x.digits = x.digits.take(takeRight)
+    if (right.isEmpty) {
+      x.exponent = leftPass + 1
+      x.digits = left.take(left.size - leftPass)
+    } else if (left.isEmpty) {
+      x.exponent = -rightPass - 1
+      x.digits = right.takeRight(right.size - rightPass)
+    } else {
+      val buffer = left ++ right
+      x.exponent = if (buffer.size > 0) decimal - 1 else 0
+      x.digits = buffer
+    }
   }
 
   def dumps(x: Real, precision: Int): String = {
-    // TODO/FIXME string concat definitelly slower than buffer, try
     if (x.digits.isEmpty) {
       if (x.signum) "-0" else "0"
-    } else if (x.exponent < 0) {
-      // TODO/FIXME try reduce if faster
+    } else if (x.exponent > 0 && x.exponent > x.digits.size) {
+      val dump = (x.digits ++ Array.fill[Int](x.exponent - 1)(0) ).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
+      (if (x.signum) "-" else "") + dump
+    } else if (x.exponent < 0 && x.exponent < x.digits.size) {
       val dump = (Array.fill[Int](-x.exponent - 1)(0) ++ x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))  
       (if (x.signum) "-0." else "0.") + dump
     } else {
-      // TODO/FIXME try reduce if faster
-      val dump = (x.digits /*++ Array.fill[Int](x.exponent)(0)*/).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
+      val dump = (x.digits).foldLeft("")((r, c) => r + ((c + 48).asInstanceOf[Char]))
       val decimal = x.exponent + 1
-
       (if (x.signum) "-" else "") +
       (if (decimal < x.digits.size) (dump.take(decimal) + "." + dump.drop(decimal)) else dump)
     }
