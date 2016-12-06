@@ -8,37 +8,43 @@ package com.github.jancajthaml.money
   * @param amount
   * @param currency
   */
-case class Money(val amount: PreciseNumber, val currency: String) extends Comparable[Money] {
+case class Money(val amount: Real, val currency: String) extends Comparable[Money] {
 
   val add = (r: Money) => this.+(r)
 
   def +(r: Money): Money = {
-    val ret = amount.add(check(r).amount)
+    val ret = amount + (check(r).amount)
     Money(ret, currency)
   }
 
+  /*
   val substract = (r: Money) => this.-(r)
 
   def -(r: Money): Money = {
-    val ret = amount.subtract(check(r).amount)
+    val ret = amount - (check(r).amount)
     Money(ret, currency)
   }
+  */
 
+  /*
   val multiply = (r: Money) => this.*(r)
 
   def *(r: Money): Money = {
-    val ret = amount.multiply(check(r).amount)
+    val ret = amount * (check(r).amount)
     Money(ret, currency)
   }
+  */
 
+  /*
   val divide = (r: Money) => this./(r)
 
   def /(r: Money): Money = {
-    val ret = amount.divide(check(r).amount)
+    val ret = amount / (check(r).amount)
     Money(ret, currency)
   }
+  */
 
-  def unary_- : Money = Money(this.amount.negate(), this.currency)
+  def unary_- : Money = Money(-this.amount, this.currency)
 
   def <=(r: Money): Boolean = compare(r) <= 0
 

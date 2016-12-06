@@ -13,6 +13,7 @@ class RealSpecs extends FlatSpec with Matchers {
   }
 
   "Parsing" should "handle 1.0" in {
+    println(">>>> PARSING")
 
     cycle("000010.00000")
     cycle("000010")
@@ -23,17 +24,18 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("0")
 
     cycle("-000010.00000")
-    cycle("-000010")  // TODO/FIXME does not parse correctly
+    cycle("-000010")
     cycle("-000010.")
     cycle("-00000.01000")
     cycle("-000010.01000")
-    cycle("-1") // TODO/FIXME does not parse correctly
-    cycle("-0") // TODO/FIXME does not parse correctly
+    cycle("-1")
+    cycle("-0")
+
+    println(">>>> ADDITION")
 
     add("1", "2")
     add("000010.00000", "000000.01000")
-    
-    //add("000000.01000", "000010.00000") // TODO/FIXME bug here
+    add("000000.01000", "000010.00000")
 
     /*
     val ref1 = Real("1" + ("0" * 5) + "0.1")

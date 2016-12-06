@@ -1,6 +1,7 @@
 package com.github.jancajthaml.money
 
 import Real._
+import Mapping._
 
 import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
@@ -8,9 +9,6 @@ import scala.collection.mutable.{ListBuffer => Buffer}
 //type number = (Boolean, Array[Int], Int)
 
 object Real {
-
-  private val prefixN = Seq('-', '0', '.')
-  private val prefixP = Seq('0' + '.')
 
   def loads(x: Real) = {
     var i = 0
@@ -20,8 +18,8 @@ object Real {
       x.signum = true
     }
 
-    var left = Buffer.empty[Char]
-    var right = Buffer.empty[Char]
+    var left = Buffer.empty[Int]
+    var right = Buffer.empty[Int]
 
     var decimal = 0
 
@@ -40,10 +38,10 @@ object Real {
         decimalFound = true
         i = x.value.length - 1
       } else if (leftOffsetFound && c == '0') {
-        left += '0'
+        left += 0
         leftPass += 1
       } else if (c != '0') {
-        left += c
+        left += char2int(c)
         leftOffsetFound = true
       }
     }
@@ -54,12 +52,12 @@ object Real {
         if (c == '.' || c == '-') {
           i = 0
         } else if (rightOffsetFound && c == '0') {
-          right += '0'
+          right += 0
           rightPass += 1
         } else if (c != '0') {
-          right += c
+          right += char2int(c)
           rightOffsetFound = true
-        }
+        } 
         i -= 1
       }
     }
@@ -81,18 +79,19 @@ object Real {
   }
 
   def dumps(x: Real): String = {
+    // TODO/FIXME not ideally performant
     val decimal = x.exponent + 1
     if (x.digits.isEmpty) {
       if (x.signum) "-0" else "0"
     } else if (decimal > 1 && decimal > x.digits.size) {
-      val dump = x.digits.mkString + ("0" * x.exponent)
+      val dump = x.digits.map(int2char(_)).mkString + ("0" * x.exponent)
       (if (x.signum) "-" else "") + dump
     } else if (decimal <= 1 && decimal < x.digits.size) {
-      val dump = ("0" * (-decimal)) + x.digits.mkString
+      val dump = ("0" * (-decimal)) + x.digits.map(int2char(_)).mkString
       (if (x.signum) "-0." else "0.") + dump
     } else {
       (if (x.signum) "-" else "") +
-      (if (decimal < x.digits.size) (x.digits.take(decimal).mkString + "." + x.digits.drop(decimal).mkString) else x.digits.mkString)
+      (if (decimal < x.digits.size) (x.digits.take(decimal).map(int2char(_)).mkString + "." + x.digits.drop(decimal).map(int2char(_)).mkString) else x.digits.map(int2char(_)).mkString)
     }
   }
 
@@ -221,23 +220,25 @@ object Real {
   */
 
   private def _add(l: Real, r: Real) = {
-
-    // TODO/FIXME BUG
-    // >> properly padded L: List(1, 0, 0, 0, 0) from List(1) with 2 ... 10
+    // TODO/FIXME not performant by the order of magnitude
 
     // Signs differ?
     if (l.signum ^ r.signum) {
+      // TODO/FIXME should _minus
       r
     } else {
-      var xe = l.exponent
-      var xc = l.digits.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
-      var ye = r.exponent
-      var yc = r.digits.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
-
       // Either zero?
-      if (xc(0) == 0 || yc(0) == 0) {
+      if (l.digits(0) == '0' || r.digits(0) == '0') {
+        // TODO/FIXME not true result
         Real("0")
       } else {
+        var xe = l.exponent
+        // TODO/FIXME performance loss
+        var xc = l.digits//.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
+        var ye = r.exponent
+        // TODO/FIXME performance loss
+        var yc = r.digits//.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
+
         var a = (xe - ye)
         if (a > 0) {
           ye = xe
@@ -253,23 +254,19 @@ object Real {
           }
         }
 
+        // TODO/FIXME performance loss
+
         // Point left digits to the longer array.
         if (xc.size < yc.size) {
           // TODO/FIXME do this better
           (1 to (yc.size - xc.size)).foreach(x => { xc :+= 0 })
         } else if (yc.size < xc.size) {
           // TODO/FIXME do this better
-          (1 to (xc.size - yc.size)).foreach(x => { yc +:= 0 })
+          (1 to (xc.size - yc.size)).foreach(x => { yc :+= 0 })
         }
 
         //println(s">> properly padded L: ${xc.toSeq} from ${l.digits.toSeq} with ${l.exponent} ... ${l.value}")
         //println(s">> properly padded R: ${yc.toSeq} from ${r.digits.toSeq} with ${r.exponent} ... ${r.value}")
-
-        if (l.digits.size < r.digits.size) {
-          val swap = yc
-          yc = xc
-          xc = swap
-        }
 
         a = yc.size
 
@@ -279,9 +276,8 @@ object Real {
          * Only start adding at yc.length - 1 as the further digits of xc can be
          * left as they are.
          */
-        while (a != 0) {
+        while (a > 0) {
           a -= 1
-          //println(s"adding ${xc(a)} and ${yc(a)} and ${b}")
           xc(a) = xc(a) + yc(a) + b
           b = xc(a) / 10 | 0
           xc(a) %= 10
@@ -293,21 +289,22 @@ object Real {
           ye += 1
         }
 
-        a = xc.size - 1
+        //a = xc.size - 1
 
         // Remove trailing zeros.
+        /*
         while (xc(a) == 0) {
           xc = xc.dropRight(1)
           a -= 1
-        }
+        }*/
 
-        //println("happy day")
-
-        l.digits = xc.map(x => (x + 48).toChar) // TODO/FIXME shortcut
+        // TODO/FIXME performance loss
+        l.digits = xc//.map(x => (x + 48).toChar) // TODO/FIXME shortcut
         l.exponent = ye
         l.signum = r.signum
 
         // TODO/FIXME inline don't use dumps here
+        // TODO/FIXME performance loss circa 0.3ms - 300ys
         l.value = dumps(l)
         l
       }
@@ -316,15 +313,17 @@ object Real {
   }
 }
 
-case class Real(var value: String) extends Cloneable {
+case class Real(var value: String) extends Cloneable with Comparable[Real] {
 
   var signum = false
   var exponent = 0
-  var digits = Buffer.empty[Char]
+  var digits = Buffer.empty[Int]
 
   loads(this)
 
-  override def toString(): String = value
+  override def toString() = value
+
+  override def compareTo(r: Real) = ???
 
   def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
   def += (r: Real) = _add(this, r)
@@ -333,4 +332,20 @@ case class Real(var value: String) extends Cloneable {
   def -  (r: Real) = _sub(super.clone().asInstanceOf[Real], r)
   def -= (r: Real) = _sub(this, r)
   */
+
+  /*
+  def *  (r: Real) = _mul(super.clone().asInstanceOf[Real], r)
+  def *= (r: Real) = _mul(this, r)
+  */
+
+  /*
+  def /  (r: Real) = _div(super.clone().asInstanceOf[Real], r)
+  def /= (r: Real) = _div(this, r)
+  */
+
+  def unary_- = {
+    val x = super.clone().asInstanceOf[Real]
+    x.signum = !x.signum
+    x
+  }
 }
