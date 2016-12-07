@@ -2,7 +2,7 @@ package com.github.jancajthaml.money
 
 import Real._
 import Mapping._
-
+import Serialization.{fromString => _loads}
 import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
 
@@ -11,6 +11,15 @@ import scala.collection.mutable.{ListBuffer => Buffer}
 object Real {
 
   def loads(x: Real) = {
+
+    val native = _loads(x.value)
+
+    val _signum = native(0).asInstanceOf[Boolean]
+    val _exponent = native(1).asInstanceOf[Int]
+    val _digits = native(2).asInstanceOf[Array[Int]]
+
+    println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
+
     var i = 0
 
     if (x.value.charAt(0) == '-') {
@@ -75,7 +84,7 @@ object Real {
     }
 
     // TODO/FIXME inline don't use dumps here
-    x.value = dumps(x)
+    //x.value = dumps(x)
   }
 
   def dumps(x: Real): String = {

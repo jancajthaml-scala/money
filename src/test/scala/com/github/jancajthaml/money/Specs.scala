@@ -16,6 +16,9 @@ class RealSpecs extends FlatSpec with Matchers {
     println(">>>> PARSING")
 
     cycle("000010.00000")
+    cycle("-000010.00000")
+
+    /*
     cycle("000010")
     cycle("000010.")
     cycle("00000.01000")
@@ -35,7 +38,7 @@ class RealSpecs extends FlatSpec with Matchers {
 
     add("1", "2")
     add("000010.00000", "000000.01000")
-    add("000000.01000", "000010.00000")
+    add("000000.01000", "000010.00000")*/
 
     /*
     val ref1 = Real("1" + ("0" * 5) + "0.1")
