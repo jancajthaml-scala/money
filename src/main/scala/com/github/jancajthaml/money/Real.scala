@@ -18,7 +18,7 @@ object Real {
     val _exponent = native(1).asInstanceOf[Int]
     val _digits = native(2).asInstanceOf[Array[Int]]
 
-    println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
+    //println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
 
     var i = 0
 

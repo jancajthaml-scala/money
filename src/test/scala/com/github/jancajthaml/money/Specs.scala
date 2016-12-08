@@ -4,35 +4,46 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class RealSpecs extends FlatSpec with Matchers {
 
-  def cycle(x: String) = println(s"${x} --> ${Real(x).toString}")
+  def cycle(x: String) = {
+    Real(x)
+    //println(s"${x} --> ${Real(x).toString}")
+  }
+
   def add(a: String, b: String) = { // TODO/FIXME
     //val x = operation.split("\\+")
     //val x = Set(a, b)
-    val operation = s"$a + $b"
-    println(s"${operation} --> ${Real(a) + Real(b)}")
+    //val operation = s"$a + $b"
+    //println(s"${operation} --> ${Real(a) + Real(b)}")
+    Real(a) + Real(b)
   }
 
   "Parsing" should "handle 1.0" in {
     println(">>>> PARSING")
 
-    cycle("000010.00000")
-    cycle("-000010.00000")
-
     /*
+    cycle("000010.00000")
     cycle("000010")
     cycle("000010.")
-    cycle("00000.01000")
-    cycle("000010.01000")
     cycle("1")
     cycle("0")
 
     cycle("-000010.00000")
     cycle("-000010")
     cycle("-000010.")
-    cycle("-00000.01000")
-    cycle("-000010.01000")
     cycle("-1")
     cycle("-0")
+    */
+
+    
+    cycle("00000.01000")
+    cycle("000010.01000")
+    cycle("-00000.01000")
+    cycle("-000010.01000")
+    
+    
+
+    /*
+
 
     println(">>>> ADDITION")
 
