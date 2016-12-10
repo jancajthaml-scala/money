@@ -39,7 +39,6 @@ class Serialization {
           i = total;
           while (--i >= 0 && x.charAt(i) == '0');
           rightDrop = total - i - 1;
-          // INFO right trim now saved in i
           //i++;
           while (i >= decimal && i < total) {
             // FIXME
@@ -133,24 +132,9 @@ class Serialization {
       }
     }
 
-    //System.arraycopy(new double[m4], 0, d, m3 + 2, m4 - m3);
-/*
-    int possibleRight = ri - rightDrop;
-    int possibleLeft = li - leftDrop;
-
-    System.out.println("ri: "+(total - ri)+" li: "+li+" rightPass: "+rightPass+" leftPass: "+leftPass+ " decimal: "+decimal+" leftDrop: "+leftDrop+" rightDrop: "+rightDrop);
-    System.out.println("possible right length "+ possibleRight);
-    System.out.println("possible left length "+ possibleLeft);
-    System.out.println("trimmed length "+(total - leftDrop - rightDrop - (decimal == -1 ? 0 : 1)));
-*/
-    //System.out.println("L >> " + li + " of " + left.length + " without " + leftPass + " ... decimal >> " + decimal + " ... R >> " + (right.length - ri) + " of " + right.length + " without " + rightPass);
-
     int leftBound = leftDrop;
     int rightBound = (total - rightDrop);
 
-    //int[] digits = new int[10];
-
-    //System.out.println("leftDrop "+leftDrop+" decimal "+decimal+" rightDrop "+rightDrop+" total "+total+" of "+x);
     int [] digits = null;
 
     if ((decimal + rightDrop) == total) {
@@ -171,6 +155,7 @@ class Serialization {
       decimal = leftPass;
       rightBound = (leftBound + li);
     } else if ((leftDrop + 1) == decimal) {
+      System.out.println("C " + rightPass);
       int f = 0;
       while (f < right.length && right[f++] == 0);
       f--;
@@ -179,7 +164,6 @@ class Serialization {
       decimal = -rightPass;
       leftBound = leftBound + rightPass + decimal + 1;
     } else {
-      System.out.println("d");
       // TODO/FIXME implement
       digits = new int[li + ri];
       decimal = decimal - leftDrop - 1;
