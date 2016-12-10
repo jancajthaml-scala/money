@@ -43,6 +43,8 @@ class Serialization {
         digits = new int[0];
       }
 
+      System.out.println(x + " -----> value: [" + underlying + "] exponent: [" + (-exponent) + "] signum: [" + signum + "] digits: " + java.util.Arrays.toString(digits));
+
       return new Object[]{
         signum,
         -exponent,
@@ -50,13 +52,13 @@ class Serialization {
         underlying
       };
     } else {
+      // TODO/FIXME exponent problem when decimal is part of underlying value
       // TODO/FIXME check if underlying contains decimal here...
       String underlying = x.substring(leftOffset, total);
       int len = underlying.length() - 1;
       int exponent = 0;
       while (exponent < len && underlying.charAt(len-++exponent) == '0');
       int remain = underlying.length() - exponent;
-
       int i = 0;
       int[] digits = new int[remain];
       while (i < remain) {
@@ -68,6 +70,9 @@ class Serialization {
           digits[i++] = (int)(c - 48);
         }
       }
+
+      System.out.println(x + " -----> value: [" + underlying + "] exponent: [" + exponent + "] signum: [" + signum + "] digits: " + java.util.Arrays.toString(digits));
+
 
       return new Object[]{
         signum,

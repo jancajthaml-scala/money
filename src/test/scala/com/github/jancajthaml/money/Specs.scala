@@ -22,7 +22,7 @@ class RealSpecs extends FlatSpec with Matchers {
 
     //cycle("000010.01000")
 
-
+/*
     cycle("0.1001")
     cycle("0.1010")
     cycle("0.1000")
@@ -54,16 +54,16 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("001000")
     cycle("0001000")
     
-
+*/
     cycle("000010.01000")   // FIXME --> 10.01000
     cycle("001010.01000")   // FIXME --> 1010.01000
     cycle("023010.01000")   // FIXME --> 23010.01000
 
 
     println(">>>> ADDITION")
-
+/*
     add("1", "2")
-    
+    */
     add("000010.00000", "000001.00000")
     add("000000.01000", "000010.00000")
     add("000010.01000", "000010.01000") // FIXME -> 000010.01000 + 000010.01000 --> 20.002

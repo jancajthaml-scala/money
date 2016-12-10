@@ -11,15 +11,12 @@ import scala.collection.mutable.{ListBuffer => Buffer}
 object Real {
 
   def loads(x: Real) = {
-
     val native = _loads(x.value)
 
-    
     x.signum = native(0).asInstanceOf[Boolean]
     x.exponent = native(1).asInstanceOf[Int]
     x.digits = native(2).asInstanceOf[Array[Int]]
     x.value = native(3).asInstanceOf[String]
-    
 
     //println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
 
