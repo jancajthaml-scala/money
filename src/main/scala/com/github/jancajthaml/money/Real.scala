@@ -14,12 +14,16 @@ object Real {
 
     val native = _loads(x.value)
 
-    val _signum = native(0).asInstanceOf[Boolean]
-    val _exponent = native(1).asInstanceOf[Int]
-    val _digits = native(2).asInstanceOf[Array[Int]]
+    
+    x.signum = native(0).asInstanceOf[Boolean]
+    x.exponent = native(1).asInstanceOf[Int]
+    x.digits = native(2).asInstanceOf[Array[Int]]
+    x.value = native(3).asInstanceOf[String]
+    
 
     //println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
 
+    /*
     var i = 0
 
     if (x.value.charAt(0) == '-') {
@@ -85,6 +89,7 @@ object Real {
 
     // TODO/FIXME inline don't use dumps here
     //x.value = dumps(x)
+    */
   }
 
   def dumps(x: Real): String = {
@@ -326,7 +331,7 @@ case class Real(var value: String) extends Cloneable with Comparable[Real] {
 
   var signum = false
   var exponent = 0
-  var digits = Buffer.empty[Int]
+  var digits = Array.empty[Int]
 
   loads(this)
 
