@@ -40,8 +40,8 @@ class Serialization {
           while (--i >= 0 && x.charAt(i) == '0');
           rightDrop = total - i - 1;
           // INFO right trim now saved in i
-          i++;
-          while (i > decimal && i < total) {
+          //i++;
+          while (i >= decimal && i < total) {
             // FIXME
             switch (x.charAt(i--)) {
               case '0': {
@@ -148,25 +148,42 @@ class Serialization {
     int leftBound = leftDrop;
     int rightBound = (total - rightDrop);
 
-    int[] digits = new int[10];
+    //int[] digits = new int[10];
 
     //System.out.println("leftDrop "+leftDrop+" decimal "+decimal+" rightDrop "+rightDrop+" total "+total+" of "+x);
-    
+    int [] digits = null;
+
     if ((decimal + rightDrop) == total) {
+      int f = left.length;
+      while (--f > 0 && left[f] == 0);
+      f++;
+      digits = new int[f];
+      System.arraycopy(left, 0, digits, 0, digits.length);
+      digits = new int[li + ri];
       decimal = leftPass;
       rightBound = (leftBound + li);
     } else if ((li + leftDrop) == total) {
+      int f = left.length;
+      while (--f > 0 && left[f] == 0);
+      f++;
+      digits = new int[f];
+      System.arraycopy(left, 0, digits, 0, digits.length);
       decimal = leftPass;
       rightBound = (leftBound + li);
     } else if ((leftDrop + 1) == decimal) {
-      decimal = -rightPass - 1;
-      leftBound = leftBound + rightPass + decimal + 2;
+      int f = 0;
+      while (f < right.length && right[f++] == 0);
+      f--;
+      digits = new int[right.length - f];
+      System.arraycopy(right, f, digits, 0, digits.length);
+      decimal = -rightPass;
+      leftBound = leftBound + rightPass + decimal + 1;
     } else {
+      System.out.println("d");
+      // TODO/FIXME implement
+      digits = new int[li + ri];
       decimal = decimal - leftDrop - 1;
     }
-
-    //System.out.
-
 
     String value = null;
 
@@ -174,7 +191,6 @@ class Serialization {
       value = signum ? "-0" : "0";
     } else {
       if (decimal < 0) {
-        //System.out.println("this case");
         value = signum ? ("-0." + x.substring(leftBound, rightBound)) : ("0." + x.substring(leftBound, rightBound));
       } else {
         value = signum ? ('-' + x.substring(leftBound, rightBound)) : x.substring(leftBound, rightBound);  
@@ -182,34 +198,9 @@ class Serialization {
       
     }
 
-    System.out.println(x + " -----> " + value + " ... " + decimal);
+    System.out.println(x + " -----> value: [" + value + "] exponent: [" + decimal + "] signum: [" + signum + "] digits: " + java.util.Arrays.toString(digits));
 
-    /*
-    if (ri == 0) {
-      System.out.println(">>> nothing on right side (2) of " + x);
-    }*/
-
-
-    /*
-    if (decimal == -1 || rightDrop + 1 == (leftBound - (signum ? 1 : 0))) {
-      //System.out.println("right empty");
-      // EMPTY RIGHT
-      rightBound = (leftBound + li - leftPass);
-      decimal = leftPass;
-    } else {
-      System.out.println("right non-empty");
-      System.out.println("leftBound "+leftBound+" rightBound "+rightBound+" rightPass "+rightPass+" decimal "+decimal+" of "+x);
-      // NON_EMPTY RIGHT
-      //digits = new int[0];
-    }*/
-
-    //System.out.println("LB "+leftBound+" RB "+rightBound+ " D " + (leftBound+decimal)+" RD " + rightDrop);
-    //System.out.println(x + " ---> " + x.substring(leftBound, rightBound) + " * 10 ^ " + decimal);
-
-    //System.out.println("boundaries ... " + leftDrop + " - " + (total - rightDrop) + " --> " + (x.substring(leftDrop, total - rightDrop)));
-    //int[] digits = new int[10];
-
-    return new Object[]{ signum, decimal, digits };
+    return new Object[]{ signum, decimal, digits, value };
   }
 
 

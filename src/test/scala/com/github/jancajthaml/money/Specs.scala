@@ -27,7 +27,31 @@ class RealSpecs extends FlatSpec with Matchers {
     */
 
     
-    cycle("00000.01000")
+    cycle("000010.01000")
+    
+    /*
+    cycle("000010.")
+    cycle("1000.0")
+    cycle("10010.0")
+    cycle("1001.0")
+    */
+
+    /*
+    cycle("000010.01000")
+
+    cycle("00000.001010")
+    cycle("00000.001110")
+    cycle("00000.001000")
+    
+    cycle("1001")
+    cycle("1010")
+    cycle("1000")
+    cycle("1000.0")
+    cycle("000010.00000")
+    cycle("000010")
+    cycle("000010.")
+    cycle("1")
+    cycle("0")
     cycle("00000.0001000")
     cycle("000010.01000")
     cycle("1000")
@@ -50,6 +74,7 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("-000010.")
     cycle("-1")
     cycle("-0")
+    */
     
 
     /*
