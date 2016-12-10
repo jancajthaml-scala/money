@@ -10,29 +10,28 @@ class Serialization {
 
     leftscan: while (true) {
       char c = x.charAt(leftOffset++);
-      if (c == '.') {
+      if (c == 0x2e) {
         leftOffset--;
-        rightscan: while (true) {
+        while (true) {
           c = x.charAt(rightOffset--);
-          if (rightOffset == -1 || c != '0' || c == '.') {
+          if (rightOffset == -1 || c > 0x30 || c == 0x2e) {
             rightOffset++;
             break leftscan;
           }
         }
-      } else if (leftOffset == total || c != '0') {
+      } else if (leftOffset == total || c > 0x30) {
         leftOffset--;
         break leftscan;
       }
     }
 
-    if (x.charAt(leftOffset) == '.') {
+    if (x.charAt(leftOffset) == 0x2e) {
       String underlying = x.substring(leftOffset + 1, rightOffset + 1);
-      //System.out.println("negative exponent underlying -> "+ underlying);
       int exponent = 0;
       int len = underlying.length();
       int[] digits = null;
       if (len > 0) {
-        while (exponent < len && underlying.charAt(exponent++) == '0');
+        while (exponent < len && underlying.charAt(exponent++) == 0x30);
         int remain = len - exponent + 1;
         int i = 0;
         digits = new int[remain];
@@ -43,43 +42,35 @@ class Serialization {
         digits = new int[0];
       }
 
-      System.out.println(x + " -----> value: [" + underlying + "] exponent: [" + (-exponent) + "] signum: [" + signum + "] digits: " + java.util.Arrays.toString(digits));
-
-      return new Object[]{
-        signum,
-        -exponent,
-        digits,
-        underlying
-      };
+      return new Object[]{ signum, -exponent, digits, underlying };
     } else {
-      // TODO/FIXME exponent problem when decimal is part of underlying value
-      // TODO/FIXME check if underlying contains decimal here...
       String underlying = x.substring(leftOffset, total);
       int len = underlying.length() - 1;
       int exponent = 0;
-      while (exponent < len && underlying.charAt(len-++exponent) == '0');
+      while (exponent < len && underlying.charAt(len-++exponent) == 0x30);
       int remain = underlying.length() - exponent;
       int i = 0;
       int[] digits = new int[remain];
       while (i < remain) {
         char c = underlying.charAt(i);
-        if (c == '.') {
+        if (c < 0x30) {
           exponent = i - 1;
+          remain--;
+          int[] swap = new int[remain];
+          System.arraycopy(digits, 0, swap, 0, i);
+          digits = swap;
+          swap = null;
           i++;
+          while (i < remain) {
+            digits[i] = (int)(underlying.charAt(++i) - 48);
+          }
+          break;
         } else {
           digits[i++] = (int)(c - 48);
         }
       }
 
-      System.out.println(x + " -----> value: [" + underlying + "] exponent: [" + exponent + "] signum: [" + signum + "] digits: " + java.util.Arrays.toString(digits));
-
-
-      return new Object[]{
-        signum,
-        exponent,
-        digits,
-        underlying
-      };
+      return new Object[]{ signum, exponent, digits, underlying };
     }
   }
 }

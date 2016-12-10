@@ -2,7 +2,7 @@ package com.github.jancajthaml.money
 
 import org.scalameter.api.{Measurer, Bench, Gen, exec}
 
-/*
+
 object ParsingPerformance extends Bench.OfflineReport {
   val times = Gen.range("times")(0, 10000, 500)
 
@@ -12,15 +12,7 @@ object ParsingPerformance extends Bench.OfflineReport {
   performance of "Real" in {
 
     measure method "loads" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1,
-        exec.outliers.covMultiplier -> 1.5,
-        exec.outliers.suspectPercent -> 40
-      ) in { sz => { 
-        //val v = ("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
-        //(0 to 1000).foreach { x => Real(v) }
-        //Real(v)
+      using(times) in { sz => { 
         (0 to sz).foreach { x => Real("10000000.00000001") }
       } }
     }
@@ -41,15 +33,8 @@ object ParsingPerformance extends Bench.OfflineReport {
   performance of "BigDecimal" in {
 
     measure method "loads" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1,
-        exec.outliers.covMultiplier -> 1.5,
-        exec.outliers.suspectPercent -> 40
-      ) in { sz => { 
-        //val v = ("1" + ("0" * sz) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+      using(times) in { sz => { 
         (0 to sz).foreach { x => BigDecimal("10000000.00000001") }
-        
       } }
     }
     /*
@@ -66,11 +51,11 @@ object ParsingPerformance extends Bench.OfflineReport {
   */
   }
 }
-*/
 
-/*
+
+
 object AdditionPerformance extends Bench.OfflineReport {
-  val times = Gen.range("times")(0, 10, 2)
+  val times = Gen.range("times")(0, 100, 20)
 
   val ref1 = Real("1" + ("0" * 100) + "0.1")
   val ref2 = BigDecimal("1" + ("0" * 100) + "0.1")
@@ -107,4 +92,4 @@ object AdditionPerformance extends Bench.OfflineReport {
     }
   }
 }
-*/
+

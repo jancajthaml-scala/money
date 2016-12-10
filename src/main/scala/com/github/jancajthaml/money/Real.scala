@@ -3,7 +3,7 @@ package com.github.jancajthaml.money
 import Real._
 import Mapping._
 import Serialization.{fromString => _loads}
-import scala.collection.mutable.{ListBuffer => Buffer}
+//import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
 
 //type number = (Boolean, Array[Int], Int)
@@ -12,81 +12,10 @@ object Real {
 
   def loads(x: Real) = {
     val native = _loads(x.value)
-
     x.signum = native(0).asInstanceOf[Boolean]
     x.exponent = native(1).asInstanceOf[Int]
     x.digits = native(2).asInstanceOf[Array[Int]]
     x.value = native(3).asInstanceOf[String]
-
-    //println(s">>> loads from java >>>> signum: ${_signum}, exponent: ${_exponent}, digits: ${_digits.toSeq}")
-
-    /*
-    var i = 0
-
-    if (x.value.charAt(0) == '-') {
-      i += 1
-      x.signum = true
-    }
-
-    var left = Buffer.empty[Int]
-    var right = Buffer.empty[Int]
-
-    var decimal = 0
-
-    var decimalFound = false
-    var leftOffsetFound = false
-    var rightOffsetFound = false
-
-    var leftPass = 0
-    var rightPass = 0
-
-    while (!decimalFound && i < x.value.length) {
-      val c = x.value.charAt(i)
-      i += 1
-      if (c == '.') {
-        decimal = left.size
-        decimalFound = true
-        i = x.value.length - 1
-      } else if (leftOffsetFound && c == '0') {
-        left += 0
-        leftPass += 1
-      } else if (c != '0') {
-        left += char2int(c)
-        leftOffsetFound = true
-      }
-    }
-
-    if (decimalFound) {
-      while (i > -1) {
-        val c = x.value.charAt(i)
-        if (c == '.' || c == '-') {
-          i = 0
-        } else if (rightOffsetFound && c == '0') {
-          right += 0
-          rightPass += 1
-        } else if (c != '0') {
-          right += char2int(c)
-          rightOffsetFound = true
-        } 
-        i -= 1
-      }
-    }
-
-    if (right.isEmpty) {
-      x.exponent = leftPass
-      x.digits = left.take(left.size - leftPass)
-    } else if (left.isEmpty) {
-      x.exponent = -rightPass - 1
-      x.digits = right.take(right.size - rightPass).reverse
-    } else {
-      left ++= right.reverse
-      x.exponent = if (left.isEmpty) 0 else decimal - 1
-      x.digits = left
-    }
-
-    // TODO/FIXME inline don't use dumps here
-    //x.value = dumps(x)
-    */
   }
 
   def dumps(x: Real): String = {
@@ -303,11 +232,11 @@ object Real {
         //a = xc.size - 1
 
         // Remove trailing zeros.
-        /*
+        
         while (xc(a) == 0) {
           xc = xc.dropRight(1)
           a -= 1
-        }*/
+        }
 
         // TODO/FIXME performance loss
         l.digits = xc//.map(x => (x + 48).toChar) // TODO/FIXME shortcut
