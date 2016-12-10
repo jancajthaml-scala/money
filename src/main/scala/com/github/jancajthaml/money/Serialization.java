@@ -31,7 +31,6 @@ class Serialization {
     scan1: while (i < total) {
       switch (x.charAt(i++)) {
         case '.': {
-          //System.out.println("decimal found at " + i + " of " + total);
           decimal = i;
           if (i == total) {
             break scan1;
@@ -39,11 +38,10 @@ class Serialization {
           
           i = total;
           while (--i >= 0 && x.charAt(i) == '0');
-          //System.out.println("rightDrop "+(total - i - 1));
           rightDrop = total - i - 1;
           // INFO right trim now saved in i
           i++;
-          while (i > decimal) {
+          while (i > decimal && i < total) {
             // FIXME
             switch (x.charAt(i--)) {
               case '0': {
@@ -152,17 +150,17 @@ class Serialization {
 
     int[] digits = new int[10];
 
-    System.out.println("leftDrop "+leftDrop+" decimal "+decimal+" rightDrop "+rightDrop+" total "+total+" of "+x);
+    //System.out.println("leftDrop "+leftDrop+" decimal "+decimal+" rightDrop "+rightDrop+" total "+total+" of "+x);
     
     if ((decimal + rightDrop) == total) {
       decimal = leftPass;
-      rightBound = (leftBound + li - leftPass);
+      rightBound = (leftBound + li);
     } else if ((li + leftDrop) == total) {
       decimal = leftPass;
-      rightBound = (leftBound + li - leftPass);
+      rightBound = (leftBound + li);
     } else if ((leftDrop + 1) == decimal) {
-      decimal = -rightPass;
-      leftBound += rightPass + 1;
+      decimal = -rightPass - 1;
+      leftBound = leftBound + rightPass + decimal + 2;
     } else {
       decimal = decimal - leftDrop - 1;
     }
@@ -176,6 +174,7 @@ class Serialization {
       value = signum ? "-0" : "0";
     } else {
       if (decimal < 0) {
+        //System.out.println("this case");
         value = signum ? ("-0." + x.substring(leftBound, rightBound)) : ("0." + x.substring(leftBound, rightBound));
       } else {
         value = signum ? ('-' + x.substring(leftBound, rightBound)) : x.substring(leftBound, rightBound);  
@@ -183,7 +182,7 @@ class Serialization {
       
     }
 
-    System.out.println(x + " -----> " + value);
+    System.out.println(x + " -----> " + value + " ... " + decimal);
 
     /*
     if (ri == 0) {

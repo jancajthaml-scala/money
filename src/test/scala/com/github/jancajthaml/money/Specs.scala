@@ -21,25 +21,35 @@ class RealSpecs extends FlatSpec with Matchers {
     println(">>>> PARSING")
 
     /*
+    
+
+    
+    */
+
+    
+    cycle("00000.01000")
+    cycle("00000.0001000")
+    cycle("000010.01000")
+    cycle("1000")
+    cycle("1000.0")
+    cycle("1000.01")
     cycle("000010.00000")
     cycle("000010")
     cycle("000010.")
     cycle("1")
     cycle("0")
 
+    cycle("-00000.01000")
+    cycle("-00000.0001000")
+    cycle("-000010.01000")
+    cycle("-1000")
+    cycle("-1000.0")
+    cycle("-1000.01")
     cycle("-000010.00000")
     cycle("-000010")
     cycle("-000010.")
     cycle("-1")
     cycle("-0")
-    */
-
-    
-    cycle("00000.01000")
-    cycle("000010.01000")
-    cycle("-00000.01000")
-    cycle("-000010.01000")
-    
     
 
     /*
