@@ -233,10 +233,11 @@ object Real {
 
         // Remove trailing zeros.
         
+        /*
         while (xc(a) == 0) {
           xc = xc.dropRight(1)
           a -= 1
-        }
+        }*/
 
         // TODO/FIXME performance loss
         l.digits = xc//.map(x => (x + 48).toChar) // TODO/FIXME shortcut

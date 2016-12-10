@@ -9,16 +9,12 @@ class RealSpecs extends FlatSpec with Matchers {
     println(s"${x} --> ${Real(x).toString}")
   }
 
-  def add(a: String, b: String, times: Int) = { // TODO/FIXME
+  def add(a: String, b: String) = { // TODO/FIXME
     //val x = operation.split("\\+")
     //val x = Set(a, b)
     val operation = s"$a + $b"
-    var result = Real(a)
-    (1 to times).foreach(_ => {
-        result += Real(b)
-    })
 
-    println(s"${operation} --> ${Real(a) + Real(b)} repeat ${times} --> ${result}")
+    println(s"${operation} --> ${Real(a) + Real(b)}")
     //Real(a) + Real(b)
   }
 
@@ -69,9 +65,9 @@ class RealSpecs extends FlatSpec with Matchers {
 /*
     add("1", "2")
     */
-    add("000010.00000", "000001.00000", 10000)
-    add("000000.01000", "000010.00000", 10000)
-    add("000010.01000", "000010.01000", 10000) // FIXME -> 000010.01000 + 000010.01000 --> 20.002
+    add("000010.00000", "000001.00000")
+    add("000000.01000", "000010.00000")
+    add("000010.01000", "000010.01000") // FIXME -> 000010.01000 + 000010.01000 --> 20.002
 
     /*
     cycle("000010.")
