@@ -3,6 +3,8 @@ package com.github.jancajthaml.money
 import Real._
 import Mapping._
 import Serialization.{fromString => _loads}
+import Math.{__add}
+
 //import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
 
@@ -35,6 +37,18 @@ object Real {
     }
   }
 
+  private def _add(l: Real, r: Real) = {
+    val native = __add(l.signum, l.digits, l.exponent, r.signum, r.digits, r.exponent)
+
+    //return new Object[]{ ls, le, ld };
+    l.signum = native(0).asInstanceOf[Boolean]
+    l.exponent = native(1).asInstanceOf[Int]
+    l.digits = native(2).asInstanceOf[Array[Int]]
+
+    l.value = dumps(l) // TODO/FIXME HUUUUGE performance bottleneck
+
+    l
+  }
   /*
   private def _sub(l: Real, r: Real) = {
     // Signs differ?
@@ -158,100 +172,6 @@ object Real {
     }
   }
   */
-
-  private def _add(l: Real, r: Real) = {
-    // TODO/FIXME not performant by the order of magnitude
-
-    // Signs differ?
-    if (l.signum ^ r.signum) {
-      // TODO/FIXME should _minus
-      r
-    } else {
-      // Either zero?
-      if (l.digits(0) == '0' || r.digits(0) == '0') {
-        // TODO/FIXME not true result
-        Real("0")
-      } else {
-        var xe = l.exponent
-        // TODO/FIXME performance loss
-        var xc = l.digits//.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
-        var ye = r.exponent
-        // TODO/FIXME performance loss
-        var yc = r.digits//.map(x => (x - 48).toInt)   // TODO/FIXME shortcut
-
-        var a = (xe - ye)
-        if (a > 0) {
-          ye = xe
-          while (a > 0) {
-            yc +:= 0
-            a -= 1
-          }
-        } else {
-          a = -a
-          while (a > 0) {
-            xc +:= 0
-            a -= 1
-          }
-        }
-
-        // TODO/FIXME performance loss
-
-        // Point left digits to the longer array.
-        if (xc.size < yc.size) {
-          // TODO/FIXME do this better
-          (1 to (yc.size - xc.size)).foreach(x => { xc :+= 0 })
-        } else if (yc.size < xc.size) {
-          // TODO/FIXME do this better
-          (1 to (xc.size - yc.size)).foreach(x => { yc :+= 0 })
-        }
-
-        //println(s">> properly padded L: ${xc.toSeq} from ${l.digits.toSeq} with ${l.exponent} ... ${l.value}")
-        //println(s">> properly padded R: ${yc.toSeq} from ${r.digits.toSeq} with ${r.exponent} ... ${r.value}")
-
-        a = yc.size
-
-        var b = 0
-
-        /*
-         * Only start adding at yc.length - 1 as the further digits of xc can be
-         * left as they are.
-         */
-        while (a > 0) {
-          a -= 1
-          xc(a) = xc(a) + yc(a) + b
-          b = xc(a) / 10 | 0
-          xc(a) %= 10
-        }
-
-        // No need to check for zero, as +x + +y != 0 && -x + -y != 0
-        if (b != 0) {
-          xc +:= b
-          ye += 1
-        }
-
-        //a = xc.size - 1
-
-        // Remove trailing zeros.
-        
-        /*
-        while (xc(a) == 0) {
-          xc = xc.dropRight(1)
-          a -= 1
-        }*/
-
-        // TODO/FIXME performance loss
-        l.digits = xc//.map(x => (x + 48).toChar) // TODO/FIXME shortcut
-        l.exponent = ye
-        l.signum = r.signum
-
-        // TODO/FIXME inline don't use dumps here
-        // TODO/FIXME performance loss circa 0.3ms - 300ys
-        l.value = dumps(l)
-        l
-      }
-    }
-
-  }
 }
 
 case class Real(var value: String) extends Cloneable with Comparable[Real] {

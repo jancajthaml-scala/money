@@ -54,6 +54,9 @@ object ParsingPerformance extends Bench.OfflineReport {
 
 
 
+*/
+
+
 object AdditionPerformance extends Bench.OfflineReport {
   val times = Gen.range("times")(0, 100, 20)
 
@@ -91,5 +94,4 @@ object AdditionPerformance extends Bench.OfflineReport {
       } }
     }
   }
-}
-*/
+} 
