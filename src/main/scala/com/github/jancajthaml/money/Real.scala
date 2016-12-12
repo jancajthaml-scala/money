@@ -45,7 +45,7 @@ object Real {
     l.exponent = native(1).asInstanceOf[Int]
     l.digits = native(2).asInstanceOf[Array[Int]]
 
-    l.value = dumps(l) // TODO/FIXME HUUUUGE performance bottleneck
+    //l.value = dumps(l) // TODO/FIXME HUUUUGE performance bottleneck
 
     l
   }

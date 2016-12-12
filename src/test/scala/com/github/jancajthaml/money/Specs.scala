@@ -5,8 +5,8 @@ import org.scalatest.{FlatSpec, Matchers}
 class RealSpecs extends FlatSpec with Matchers {
 
   def cycle(x: String) = {
-    //Real(x)
-    println(s"${x} --> ${Real(x).toString}")
+    val f = Real(x)
+    println(s"${x} --> ${f} --> ${Real.dumps(f)}")
   }
 
   def add(a: String, b: String) = { // TODO/FIXME
@@ -22,6 +22,14 @@ class RealSpecs extends FlatSpec with Matchers {
     println(">>>> PARSING")
 
     //cycle("000010.01000")
+    cycle("2000.01")
+    cycle("0002000.01000")
+    cycle("0.01")
+    cycle("0.01000")
+    cycle("1000")
+    cycle("0001000")
+    cycle("1000.0")
+    cycle("0001000.0")
 
 /*
     cycle("0.1001")
@@ -54,6 +62,9 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("001110")
     cycle("001000")
     cycle("0001000")
+
+/*
+    
     
 */
     //cycle("000010.01000")   // FIXME --> 10.01000
@@ -65,27 +76,13 @@ class RealSpecs extends FlatSpec with Matchers {
     //add("1", "2")
     add("000000.01000", "000010.00000")
     add("000010.00000", "000000.01000")
-/*
     add("1", "2")
-    */
-    //add("000010.00000", "000001.00000")
-    //add("000000.01000", "000010.00000")
-    //add("000010.01000", "000010.01000") // FIXME -> 000010.01000 + 000010.01000 --> 20.002
+    add("000010.00000", "000001.00000")
+    add("000000.01000", "000010.00000")
+    add("000010.01000", "000010.01000")
 
-    /*
-    cycle("000010.")
-    cycle("1000.0")
-    cycle("10010.0")
-    cycle("1001.0")
-    */
+    println(">>>> SIG")
 
-    /*
-    cycle("000010.01000")
-
-    cycle("00000.001010")
-    cycle("00000.001110")
-    cycle("00000.001000")
-    
     cycle("1001")
     cycle("1010")
     cycle("1000")
@@ -117,6 +114,29 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("-000010.")
     cycle("-1")
     cycle("-0")
+    */
+/*
+    
+    */
+    //
+    //
+    // // FIXME -> 000010.01000 + 000010.01000 --> 20.002
+
+    /*
+    cycle("000010.")
+    cycle("1000.0")
+    cycle("10010.0")
+    cycle("1001.0")
+    */
+
+    /*
+    cycle("000010.01000")
+
+    cycle("00000.001010")
+    cycle("00000.001110")
+    cycle("00000.001000")
+    
+    
     */
     
 

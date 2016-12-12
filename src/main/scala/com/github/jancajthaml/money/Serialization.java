@@ -2,6 +2,12 @@ package com.github.jancajthaml.money;
 
 class Serialization {
 
+  public static String toString(boolean s, int[] d, int e) {
+    String result = "";
+
+    return result;
+  }
+
   public static Object[] fromString(String x) {
     // TODO/FIXME toCharArray and System.arraycopy try performance 
     int total = x.length();
@@ -32,16 +38,16 @@ class Serialization {
     int[] digits = null;
 
     if (x.charAt(leftOffset) == 0x2e) {
-      underlying = x.substring(leftOffset + 1, rightOffset + 1);
+      underlying = x.substring(leftOffset - 1, rightOffset + 1);
       len = underlying.length();
       
       if (len > 0) {
         while (exponent < len && underlying.charAt(exponent++) == 0x30);
-        int remain = len - exponent + 1;
+        int remain = len - exponent;
         int i = 0;
         digits = new int[remain];
         while (i < remain) {
-          digits[i] = (int)(underlying.charAt((len-1) -i++) - 48);
+          digits[i] = (int)(underlying.charAt((len - 1) -i++) - 48);
         }
       } else {
         digits = new int[0];
@@ -50,8 +56,9 @@ class Serialization {
     } else {
       underlying = x.substring(leftOffset, total);
       len = underlying.length() - 1;
-      while (exponent < len && underlying.charAt(len-++exponent) == 0x30);
-      int remain = underlying.length() - exponent;
+      while (exponent < len && underlying.charAt(len-exponent++) == 0x30);
+      exponent--;
+      int remain = underlying.length() - exponent;  // INFO possible +1 eĺement for decimal cases
       int i = 0;
       digits = new int[remain];
       while (i < remain) {
@@ -74,6 +81,6 @@ class Serialization {
       }
     }
 
-    return new Object[]{ signum, exponent, digits, underlying };
+    return new Object[]{ signum, exponent, digits, signum ? ('-' + underlying) : underlying };
   }
 }
