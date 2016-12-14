@@ -2,7 +2,7 @@ package com.github.jancajthaml.money;
 
 class Math {
 
-  public static Object[] __add(boolean ls, int[] ld, int le, boolean rs, int[] rd, int re) {
+  public static Object[] __add(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
     // 3% slower
 
     if (ls ^ rs) {
@@ -16,17 +16,17 @@ class Math {
     }
 
     int exponentDiff = le - re;
-    int[] swap = null;
+    char[] swap = null;
 
     if (exponentDiff > 0) {
       re = le;
-      swap = new int[rd.length + exponentDiff];
+      swap = new char[rd.length + exponentDiff];
       // FIXME subtranction rd.length twice
       System.arraycopy(rd, 0, swap, swap.length - rd.length, rd.length);
       rd = swap;
       swap = null;
     } else {
-      swap = new int[ld.length - exponentDiff];
+      swap = new char[ld.length - exponentDiff];
       // FIXME subtranction ld.length twice
       System.arraycopy(ld, 0, swap, swap.length - ld.length, ld.length);
       ld = swap;
@@ -36,12 +36,12 @@ class Math {
     int i = ld.length - rd.length;
 
     if (i < 0) {
-      swap = new int[rd.length];
+      swap = new char[rd.length];
       System.arraycopy(ld, 0, swap, 0, ld.length);
       ld = swap;
       swap = null;
     } else if (i > 0) {
-      swap = new int[ld.length];
+      swap = new char[ld.length];
       System.arraycopy(rd, 0, swap, 0, rd.length);
       rd = swap;
       swap = null;
@@ -58,7 +58,7 @@ class Math {
         }
       }
     } catch (ArrayIndexOutOfBoundsException e) {
-      swap = new int[ld.length + 1];
+      swap = new char[ld.length + 1];
       System.arraycopy(rd, 0, swap, 1, ld.length);
       swap[0] = 1;
       ld = swap;

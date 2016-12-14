@@ -2,7 +2,7 @@ package com.github.jancajthaml.money
 
 import Real._
 import Mapping._
-import Serialization.{fromString => _loads}
+import Serialization.{fromString => _loads, toString => _dumps}
 import Math.{__add}
 
 //import scala.collection.mutable.{ListBuffer => Buffer}
@@ -16,26 +16,11 @@ object Real {
     val native = _loads(x.value)
     x.signum = native(0).asInstanceOf[Boolean]
     x.exponent = native(1).asInstanceOf[Int]
-    x.digits = native(2).asInstanceOf[Array[Int]]
+    x.digits = native(2).asInstanceOf[Array[Char]]
     x.value = native(3).asInstanceOf[String]
   }
 
-  def dumps(x: Real): String = {
-    // TODO/FIXME not ideally performant
-    val decimal = x.exponent + 1
-    if (x.digits.isEmpty) {
-      if (x.signum) "-0" else "0"
-    } else if (decimal > 1 && decimal > x.digits.size) {
-      val dump = x.digits.map(int2char(_)).mkString + ("0" * x.exponent)
-      (if (x.signum) "-" else "") + dump
-    } else if (decimal <= 1 && decimal < x.digits.size) {
-      val dump = ("0" * (-decimal)) + x.digits.map(int2char(_)).mkString
-      (if (x.signum) "-0." else "0.") + dump
-    } else {
-      (if (x.signum) "-" else "") +
-      (if (decimal < x.digits.size) (x.digits.take(decimal).map(int2char(_)).mkString + "." + x.digits.drop(decimal).map(int2char(_)).mkString) else x.digits.map(int2char(_)).mkString)
-    }
-  }
+  def dumps(x: Real): String = _dumps(x.signum, x.digits, x.exponent)
 
   private def _add(l: Real, r: Real) = {
     val native = __add(l.signum, l.digits, l.exponent, r.signum, r.digits, r.exponent)
@@ -43,10 +28,9 @@ object Real {
     //return new Object[]{ ls, le, ld };
     l.signum = native(0).asInstanceOf[Boolean]
     l.exponent = native(1).asInstanceOf[Int]
-    l.digits = native(2).asInstanceOf[Array[Int]]
+    l.digits = native(2).asInstanceOf[Array[Char]]
 
     //l.value = dumps(l) // TODO/FIXME HUUUUGE performance bottleneck
-
     l
   }
   /*
@@ -178,7 +162,7 @@ case class Real(var value: String) extends Cloneable with Comparable[Real] {
 
   var signum = false
   var exponent = 0
-  var digits = Array.empty[Int]
+  var digits = Array.empty[Char]
 
   loads(this)
 

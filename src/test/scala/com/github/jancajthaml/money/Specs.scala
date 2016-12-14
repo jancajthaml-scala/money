@@ -14,14 +14,23 @@ class RealSpecs extends FlatSpec with Matchers {
     //val x = Set(a, b)
     val operation = s"$a + $b"
 
-    println(s"${operation} --> ${Real(a) + Real(b)}")
+    val x = Real(a) + Real(b)
+    println(s"${operation} --> ${x} --> ${Real.dumps(x)}")
     //Real(a) + Real(b)
   }
 
   "Parsing" should "handle 1.0" in {
     println(">>>> PARSING")
 
-    //cycle("000010.01000")
+    
+    cycle("1000")
+    cycle("1000.")
+    cycle("1000.0")
+    cycle("1000.0000")
+    cycle("0.01000")
+    cycle("0.01020")
+    cycle("000010.01000")
+    cycle("000010.01000")
     cycle("2000.01")
     cycle("0002000.01000")
     cycle("0.01")
@@ -30,15 +39,15 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("0001000")
     cycle("1000.0")
     cycle("0001000.0")
-
-/*
     cycle("0.1001")
     cycle("0.1010")
     cycle("0.1000")
     cycle("0.10000")
     cycle("0.00001000000")
     cycle("0.000010")
-    cycle("0.000010")
+    cycle("0.1")
+
+    /*
     cycle("0.1")
     cycle("0.0")
 
@@ -62,6 +71,26 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("001110")
     cycle("001000")
     cycle("0001000")
+    */
+
+    /*
+    
+    cycle("1000.0")
+    */
+
+    println("ADDITION")
+
+    //add("1000", "1.0")
+    //add("1000.", "1.0")
+    /*
+    
+    add("1000.0", "1.0")
+    */
+
+    
+
+/*
+    
 
 /*
     
