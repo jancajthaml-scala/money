@@ -1,7 +1,7 @@
 package com.github.jancajthaml.money
 
 import Real._
-import Mapping._
+//import Mapping._
 import Serialization.{fromString => _loads, toString => _dumps}
 import Math.{__add}
 
@@ -24,15 +24,13 @@ object Real {
 
   private def _add(l: Real, r: Real) = {
     val native = __add(l.signum, l.digits, l.exponent, r.signum, r.digits, r.exponent)
-
-    //return new Object[]{ ls, le, ld };
     l.signum = native(0).asInstanceOf[Boolean]
     l.exponent = native(1).asInstanceOf[Int]
     l.digits = native(2).asInstanceOf[Array[Char]]
-
-    //l.value = dumps(l) // TODO/FIXME HUUUUGE performance bottleneck
+    l.value = dumps(l)
     l
   }
+
   /*
   private def _sub(l: Real, r: Real) = {
     // Signs differ?

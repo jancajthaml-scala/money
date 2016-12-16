@@ -10,7 +10,6 @@ class Serialization {
     } else if (e < 0) {
       int i = 0;
       r += "0.";
-
       while (e < -1) {
         r += '0';
         e++;
@@ -21,7 +20,6 @@ class Serialization {
     } else {
       int i = 0;
       if (e < d.length - 1) {
-        System.out.println(e + " / " + java.util.Arrays.toString(d));
         while (i <= e) {
           r += d[i++];
         }
@@ -30,11 +28,12 @@ class Serialization {
           r += d[i++];
         }
       } else {
+        int f = e - d.length;
         int len = d.length;
         while (i < len) {
           r += d[i++];
         }
-        len += e;
+        len += f;
         while (i++ < len) {
           r += '0';
         }
@@ -75,12 +74,13 @@ class Serialization {
     char[] digits = null;
 
     if (x.charAt(leftOffset) == 0x2e) {
+      //System.out.println("hit-0");
       underlying = x.substring(leftOffset - 1, rightOffset + 1);
       digits = underlying.toCharArray();
       len = digits.length - 1;
       if (len > 0) {
         while (exponent <= len && digits[exponent++] == 0x30);
-        int remain = len - exponent + 1;
+        int remain = len - exponent;
         exponent--;
         char[] swap = new char[remain];
         System.arraycopy(digits, digits.length - remain, swap, 0, remain);
@@ -89,37 +89,32 @@ class Serialization {
       } else {
         digits = new char[0];
       }
-      exponent = -exponent;
+      exponent = -exponent - 1;
     } else {
+      //System.out.println("hit-1");
       underlying = x.substring(leftOffset, total);
       len = underlying.length() - 1;
-
       char sc;
       int em = 0;
       while (exponent <= len && ((sc = underlying.charAt(len-exponent++)) == 0x30 || (sc < 0x30 && (em = exponent) > 0)));
       exponent -= (em > 0 ? (em + 1) : 1);
+      
       int remain = underlying.length() - (em > 0 ? (exponent + em) : exponent);
       int i = 0;
+      char[] digits2 = underlying.toCharArray();
       digits = new char[remain];
-      System.out.println("this case "+ exponent);
+      exponent++;
+
       while (i < remain) {
-        System.out.println("this case 2 "+ exponent);
-        char c = underlying.charAt(i);
+        char c = digits2[i];
         if (c < 0x30) {
           exponent = i - 1;
-          remain--;
-          char[] swap = new char[remain];
-          System.arraycopy(digits, 0, swap, 0, i);
-          digits = swap;
-          swap = null;
-          i++;
-          //FIXME arraycopy
-          while (i < remain) {
-            digits[i] = underlying.charAt(++i); //(int)(underlying.charAt(++i) - 48);
-          }
+          digits[i] = '0';
+          System.arraycopy(digits2, i + 1, digits, i, remain - i - 1);
+          digits = java.util.Arrays.copyOf(digits, digits.length - 1);
           break;
         } else {
-          digits[i++] = c; //(int)(c - 48);
+          digits[i++] = c;
         }
       }
     }

@@ -6,20 +6,39 @@ class RealSpecs extends FlatSpec with Matchers {
 
   def cycle(x: String) = {
     val f = Real(x)
-    println(s"${x} --> ${f} --> ${Real.dumps(f)}")
+    println(s"${x} --> ${f} --> ${Real.dumps(f)} / ${f.digits.toSeq} / ${f.exponent}")
   }
 
-  def add(a: String, b: String) = { // TODO/FIXME
+  def add(a: String, b: String) = {
     //val x = operation.split("\\+")
     //val x = Set(a, b)
-    val operation = s"$a + $b"
+    //val operation = s"$a + $b"
 
-    val x = Real(a) + Real(b)
-    println(s"${operation} --> ${x} --> ${Real.dumps(x)}")
-    //Real(a) + Real(b)
+    val left = Real(a)
+    val right = Real(b)
+    val x = left + right
+    //println(s">>> ${left.digits.toSeq}")
+    //println(s">>> ${right.digits.toSeq}")
+    println(s"(${a} + ${b}) = ${x} --> ${Real.dumps(x)}") // / ${x.digits.toSeq} / ${x.exponent}")
+  }
+
+  def repr(a: String) = {
+    //val x = operation.split("\\+")
+    //val x = Set(a, b)
+    //val operation = s"$a + $b"
+
+    val left = Real(a)
+    //val right = Real(b)
+    //val x = left + right
+    //println(s">>> ${left.digits.toSeq}")
+    //println(s">>> ${right.digits.toSeq}")
+    //println(s"(${a} + ${b}) = ${x} --> ${Real.dumps(x)} / ${x.digits.toSeq}")
+    println(s"${a} --> ${left} --> ${Real.dumps(left)} --> ${left.digits.toSeq} --> ${left.exponent}")
   }
 
   "Parsing" should "handle 1.0" in {
+
+    /*
     println(">>>> PARSING")
 
     
@@ -46,6 +65,8 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("0.00001000000")
     cycle("0.000010")
     cycle("0.1")
+
+    */
 
     /*
     cycle("0.1")
@@ -78,9 +99,42 @@ class RealSpecs extends FlatSpec with Matchers {
     cycle("1000.0")
     */
 
+    cycle("1001.0")
+    cycle("1.001")
+    //cycle("1001.0")
+
+    println("REPR")
+    
+    repr("1001")
+    repr("1001.0")
+    repr("1000.1")
+    repr("1000")
+    repr("1000.0")
+    repr("000000.01000")
+
+    repr("000000.01000")
+    repr("000010.00000")
+
+    /*
     println("ADDITION")
 
-    //add("1000", "1.0")
+    add("1000", "1001")
+
+    add("1.0", "1000")
+
+    add("000000.01000", "000010.00000")
+    add("000010.00000", "000000.01000")
+    add("1", "2")
+    add("000010.00000", "000001.00000")
+    add("000000.01000", "000010.00000")
+    add("000010.01000", "000010.01000")
+
+    */
+
+    //add("1000", "1000")
+
+    //add("1001", "1000")
+
     //add("1000.", "1.0")
     /*
     
