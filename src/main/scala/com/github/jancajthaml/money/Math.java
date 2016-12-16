@@ -2,13 +2,35 @@ package com.github.jancajthaml.money;
 
 class Math {
 
+  final static char[] ZEROES;
+
+  static {
+    ZEROES = new char[1000];
+    java.util.Arrays.fill(ZEROES, '0');
+  }
+  
+  private static char[] fillZeroes(char[] dest, int from, int to) {
+    int offset = from;
+    int len = to - from;
+    int remain = len;
+
+    if (ZEROES.length < len) {
+      while (remain > 0) {
+        System.arraycopy(ZEROES, 0, dest, offset, remain);
+        offset += remain;
+        remain -= ZEROES.length;
+      }
+    } else {
+      while (remain > 0) {
+        System.arraycopy(ZEROES, 0, dest, offset, remain);
+        offset += remain;
+        remain -= len;
+      }
+    }
+    return dest;
+  }
+
   public static Object[] __add(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
-    // 3% slower
-
-    // TODO/FIXME align by exponent
-
-    //System.out.println(">>>> ld(1) / " + java.util.Arrays.toString(ld));
-    //System.out.println(">>>> rd(1) / " + java.util.Arrays.toString(rd));
 
     if (ls ^ rs) {
       // TODO/FIXME should _minus
@@ -17,67 +39,19 @@ class Math {
     }
 
     char[] swap = null;
-/*
-    if (le > 0 && le >= ld.length - 1) {
-      int zeroes = le - (ld.length - 1);
-      swap = new char[ld.length + zeroes];
-      java.util.Arrays.fill(swap, '0');
-      System.arraycopy(ld, 0, swap, 0, ld.length);
-      ld = swap;
-      swap = null;
-      //le = 0;
-      //System.out.println("LE >>>>>> value + zeroes: " + zeroes + " / " + java.util.Arrays.toString(ld));
-    } else if (le < 0 && ld.length - 1 >= le) {
-      int zeroes = (ld.length - 1) - (le + 1);
-      swap = new char[ld.length + zeroes];
-      java.util.Arrays.fill(swap, '0');
-
-      System.out.println("LE >>>>>> " + le + " " + zeroes + " " + java.util.Arrays.toString(ld) + " / " + java.util.Arrays.toString(swap));
-
-      System.arraycopy(ld, 0, swap, swap.length - ld.length, ld.length);
-      ld = swap;
-      swap = null;
-      //le = 0;
-      //System.out.println("LE >>>>>> zeroes + value: " + zeroes + " / " + java.util.Arrays.toString(ld));
-    }*/
-
-    /*if (re > 0 && re >= rd.length - 1) {
-      int zeroes = re - (rd.length - 1);
-      swap = new char[rd.length + zeroes];
-      java.util.Arrays.fill(swap, '0');
-      System.arraycopy(rd, 0, swap, 0, rd.length);
-      rd = swap;
-      swap = null;
-      //re = 0;
-      //System.out.println("LE >>>>>> value + zeroes: " + zeroes + " / " + java.util.Arrays.toString(ld));
-    } else if (re < 0 && rd.length - 1 >= re) {
-      int zeroes = re - (rd.length - 1);
-      swap = new char[rd.length + zeroes];
-      java.util.Arrays.fill(swap, '0');
-      System.arraycopy(rd, 0, swap, swap.length - rd.length, rd.length);
-      rd = swap;
-      swap = null;
-      //re = 0;
-    }*/
-
-    //System.out.println(">>>> ld(1) / " + java.util.Arrays.toString(ld) + " / " + le);
-    //System.out.println(">>>> rd(1) / " + java.util.Arrays.toString(rd) + " / " + re);
 
     int exponentDiff = le - re;
 
     if (exponentDiff > 0) {
       re = le;
       swap = new char[rd.length + exponentDiff];
-      java.util.Arrays.fill(swap, '0');
-      // FIXME subtranction rd.length twice
+      swap = fillZeroes(swap, 0, swap.length - rd.length); // FIXME
       System.arraycopy(rd, 0, swap, swap.length - rd.length, rd.length);
       rd = swap;
       swap = null;
     } else {
       swap = new char[ld.length - exponentDiff];
-      //System.out.println("B --> " + swap.length);
-      java.util.Arrays.fill(swap, '0');
-      // FIXME subtranction ld.length twice
+      swap = fillZeroes(swap, 0, swap.length - ld.length); // FIXME
       System.arraycopy(ld, 0, swap, swap.length - ld.length, ld.length);
       ld = swap;
       swap = null;
@@ -87,13 +61,13 @@ class Math {
 
     if (i < 0) {
       swap = new char[rd.length];
-      java.util.Arrays.fill(swap, '0');
+      swap = fillZeroes(swap, ld.length, swap.length); // FIXME
       System.arraycopy(ld, 0, swap, 0, ld.length);
       ld = swap;
       swap = null;
     } else if (i > 0) {
       swap = new char[ld.length];
-      java.util.Arrays.fill(swap, '0');
+      swap = fillZeroes(swap, rd.length, swap.length);  // FIXME
       System.arraycopy(rd, 0, swap, 0, rd.length);
       rd = swap;
       swap = null;
@@ -104,19 +78,14 @@ class Math {
     try {
       while (i-- > 0) {
         int kf = (((int) ld[i] - 48) + ((int) rd[i] - 48));
-        //System.out.println("adding " + ld[i] + " with " + rd[i] + " ––> " + kf);
         if (kf >= 10) {
-          //System.out.println("carry to left at " + i);
           ld[i] = (char)((kf % 10) + 48);
-          //System.out.println("modulus done "+ ld[i] + " at " + i);
           ld[i - 1] += 1;
-          //System.out.println("left decrement");
         } else {
           ld[i] = (char)(kf + 48);
         }
       }
     } catch (ArrayIndexOutOfBoundsException e) {
-      //System.out.println("overflow");
       swap = new char[ld.length + 1];
       System.arraycopy(ld, 0, swap, 1, ld.length);
       swap[0] = '1';
@@ -124,9 +93,6 @@ class Math {
       swap = null;
       re++;
     }
-
-    //System.out.println(">>>> ld(4) / " + java.util.Arrays.toString(ld));
-    //System.out.println(">>>> re: " + re);
 
     return new Object[]{ ls, re, ld };
   }
