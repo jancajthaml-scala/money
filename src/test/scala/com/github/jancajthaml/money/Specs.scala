@@ -2,8 +2,9 @@ package com.github.jancajthaml.money
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class RealSpecs extends FlatSpec with Matchers {
+class ParsingSpecs extends FlatSpec with Matchers {
 
+  /*
   def cycle(x: String) = {
     val f = Real(x)
     println(s"${x} --> ${f} --> ${Real.dumps(f)} / ${f.digits.toSeq} / ${f.exponent}")
@@ -35,236 +36,432 @@ class RealSpecs extends FlatSpec with Matchers {
     //println(s"(${a} + ${b}) = ${x} --> ${Real.dumps(x)} / ${x.digits.toSeq}")
     println(s"${a} --> ${left} --> ${Real.dumps(left)} --> ${left.digits.toSeq} --> ${left.exponent}")
   }
+  */
 
-  "Parsing" should "handle 1.0" in {
-
-    /*
-    println(">>>> PARSING")
-
-    
-    cycle("1000")
-    cycle("1000.")
-    cycle("1000.0")
-    cycle("1000.0000")
-    cycle("0.01000")
-    cycle("0.01020")
-    cycle("000010.01000")
-    cycle("000010.01000")
-    cycle("2000.01")
-    cycle("0002000.01000")
-    cycle("0.01")
-    cycle("0.01000")
-    cycle("1000")
-    cycle("0001000")
-    cycle("1000.0")
-    cycle("0001000.0")
-    cycle("0.1001")
-    cycle("0.1010")
-    cycle("0.1000")
-    cycle("0.10000")
-    cycle("0.00001000000")
-    cycle("0.000010")
-    cycle("0.1")
-
-    */
-
-    /*
-    cycle("0.1")
-    cycle("0.0")
-
-    cycle("00000.001010")
-    cycle("00000.001110")
-    cycle("00000.001000")
-    cycle("00000.0001000")
-    
-
-    cycle("1001")
-    cycle("1010")
-    cycle("1000")
-    cycle("10000")
-    cycle("00001000000")
-    cycle("000010")
-    cycle("000010")
-    cycle("1")
-    cycle("0")
-
-    cycle("001010")
-    cycle("001110")
-    cycle("001000")
-    cycle("0001000")
-    */
-
-    /*
-    
-    cycle("1000.0")
-    */
-
-    cycle("1001.0")
-    cycle("1.001")
-    //cycle("1001.0")
-
-    println("REPR")
-    
-    repr("1001")
-    repr("1001.0")
-    repr("1000.1")
-    repr("1000")
-    repr("1000.0")
-    repr("000000.01000")
-
-    repr("000000.01000")
-    repr("000010.00000")
-
-    /*
-    println("ADDITION")
-
-    add("1000", "1001")
-
-    add("1.0", "1000")
-
-    add("000000.01000", "000010.00000")
-    add("000010.00000", "000000.01000")
-    add("1", "2")
-    add("000010.00000", "000001.00000")
-    add("000000.01000", "000010.00000")
-    add("000010.01000", "000010.01000")
-
-    */
-
-    //add("1000", "1000")
-
-    //add("1001", "1000")
-
-    //add("1000.", "1.0")
-    /*
-    
-    add("1000.0", "1.0")
-    */
-
-    
-
-/*
-    
-
-/*
-    
-    
-*/
-    //cycle("000010.01000")   // FIXME --> 10.01000
-    //cycle("001010.01000")   // FIXME --> 1010.01000
-    //cycle("023010.01000")   // FIXME --> 23010.01000
-
-
-    println(">>>> ADDITION")
-    //add("1", "2")
-    add("000000.01000", "000010.00000")
-    add("000010.00000", "000000.01000")
-    add("1", "2")
-    add("000010.00000", "000001.00000")
-    add("000000.01000", "000010.00000")
-    add("000010.01000", "000010.01000")
-
-    println(">>>> SIG")
-
-    cycle("1001")
-    cycle("1010")
-    cycle("1000")
-    cycle("1000.0")
-    cycle("000010.00000")
-    cycle("000010")
-    cycle("000010.")
-    cycle("1")
-    cycle("0")
-    cycle("00000.0001000")
-    cycle("000010.01000")
-    cycle("1000")
-    cycle("1000.0")
-    cycle("1000.01")
-    cycle("000010.00000")
-    cycle("000010")
-    cycle("000010.")
-    cycle("1")
-    cycle("0")
-
-    cycle("-00000.01000")
-    cycle("-00000.0001000")
-    cycle("-000010.01000")
-    cycle("-1000")
-    cycle("-1000.0")
-    cycle("-1000.01")
-    cycle("-000010.00000")
-    cycle("-000010")
-    cycle("-000010.")
-    cycle("-1")
-    cycle("-0")
-    */
-/*
-    
-    */
-    //
-    //
-    // // FIXME -> 000010.01000 + 000010.01000 --> 20.002
-
-    /*
-    cycle("000010.")
-    cycle("1000.0")
-    cycle("10010.0")
-    cycle("1001.0")
-    */
-
-    /*
-    cycle("000010.01000")
-
-    cycle("00000.001010")
-    cycle("00000.001110")
-    cycle("00000.001000")
-    
-    
-    */
-    
-
-    /*
-
-
-    println(">>>> ADDITION")
-
-    add("1", "2")
-    add("000010.00000", "000000.01000")
-    add("000000.01000", "000010.00000")*/
-
-    /*
-    val ref1 = Real("1" + ("0" * 5) + "0.1")
-    val ref2 = BigDecimal("1" + ("0" * 5) + "0.1")
-
-    println(s"${ref1.toString}")
-    println(s"${ref2.toString}")
-    */
-
-    //cycle("00000.01000")
-    /*
-    val a = Real("000010.020000")
-    //println(s"000010.020000 >>> ${a}")
-
-    val b = Real("0.020000")
-    //println(s"0.020000 >>> ${b}")
-
-    val c = Real("000010.00000")
-    //println(s"000010.00000 >>> ${c}")
-
-    val d = Real("000000.00000")
-    //println(s"000000.00000 >>> ${d}")
-
-    val e = Real("000010")
-    //println(s"000010 >>> ${e}")
-
-    val f = Real("0")
-    */
-    //println(s"0 >>> ${f}")
-
-    //println()
-    //x.repr should === ("1.0001E3")
-    //x.toString should === ("1000.1")
-
-    1 should === (1)
+  "Trivia" should "parse 1" in {
+    val left = Real("1")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0').deep)
   }
+
+  it should "parse 2" in {
+    val left = Real("2")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('2', '0').deep)
+  }
+
+  it should s"parse ${Long.MaxValue}${Long.MaxValue}" in {
+    val left = Real(s"${Long.MaxValue}${Long.MaxValue}")
+    assert(left.exponent == s"${Long.MaxValue}${Long.MaxValue}".size)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('9', '2', '2', '3', '3', '7', '2', '0', '3', '6', '8', '5', '4', '7', '7', '5', '8', '0', '7', '9', '2', '2', '3', '3', '7', '2', '0', '3', '6', '8', '5', '4', '7', '7', '5', '8', '0', '7', '0').deep)
+  }
+
+  "Normalized" should "parse 1.0" in {
+    val left = Real("1.0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0').deep)
+  }
+
+  it should "parse 0.1" in {
+    val left = Real("0.1")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '1').deep)
+  }
+
+  it should "parse 0.01" in {
+    val left = Real("0.01")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0', '1').deep)
+  }
+
+  it should "parse 10" in {
+    val left = Real("10")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse 10.0" in {
+    val left = Real("10.0")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse 10.1" in {
+    val left = Real("10.1")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '1').deep)
+  }
+
+  it should "parse 10.01" in {
+    val left = Real("10.01")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '1').deep)
+  }
+
+  it should "parse 10000000.00000001" in {
+    val left = Real("10000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse 0" in {
+    val left = Real("0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  it should "parse -1.0" in {
+    val left = Real("-1.0")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0').deep)
+  }
+
+  it should "parse -0.1" in {
+    val left = Real("-0.1")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '1').deep)
+  }
+
+  it should "parse -0.01" in {
+    val left = Real("-0.01")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '0', '1').deep)
+  }
+
+  it should "parse -10" in {
+    val left = Real("-10")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse -10.0" in {
+    val left = Real("-10.0")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse -10.1" in {
+    val left = Real("-10.1")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '1').deep)
+  }
+
+  it should "parse -10.01" in {
+    val left = Real("-10.01")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0', '1').deep)
+  }
+
+  it should "parse -10000000.00000001" in {
+    val left = Real("-10000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse -0" in {
+    val left = Real("-0")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  "Malformed" should "parse 0.0" in {
+    val left = Real("0.0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  it should "parse 01.10" in {
+    val left = Real("01.10")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '1', '1', '0').deep)
+  }
+
+  it should "parse 00000000.00000001" in {
+    val left = Real("00000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse 10000000.00000000" in {
+    val left = Real("10000000.00000000")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0').deep)
+  }
+
+  val randomDecimalL = new java.math.BigDecimal(java.lang.Math.random()).divide(new java.math.BigDecimal(10000 + ".0"), java.math.BigDecimal.ROUND_UP).multiply(new java.math.BigDecimal("100000000000.0")).toBigInteger()
+  val randomDecimalR = new java.math.BigDecimal(java.lang.Math.random()).divide(new java.math.BigDecimal(10000 + ".0"), java.math.BigDecimal.ROUND_UP).multiply(new java.math.BigDecimal("100000000000.0")).toBigInteger()
+  
+  val randomDecimal = s"${randomDecimalL}.${randomDecimalR}"
+
+  "Random" should s"parse ${randomDecimal}" in {
+    val left = Real(randomDecimal)
+    assert(left.exponent == randomDecimal.indexOf('.'))
+    assert(left.signum == false)
+    assert(left.digits.deep == randomDecimal.toCharArray.filterNot(_ == '.').deep)
+  }
+}
+
+
+class SerializationSpecs extends FlatSpec with Matchers {
+
+  /*
+  def cycle(x: String) = {
+    val f = Real(x)
+    println(s"${x} --> ${f} --> ${Real.dumps(f)} / ${f.digits.toSeq} / ${f.exponent}")
+  }
+
+  def add(a: String, b: String) = {
+    //val x = operation.split("\\+")
+    //val x = Set(a, b)
+    //val operation = s"$a + $b"
+
+    val left = Real(a)
+    val right = Real(b)
+    val x = left + right
+    //println(s">>> ${left.digits.toSeq}")
+    //println(s">>> ${right.digits.toSeq}")
+    println(s"(${a} + ${b}) = ${x} --> ${Real.dumps(x)}") // / ${x.digits.toSeq} / ${x.exponent}")
+  }
+
+  def repr(a: String) = {
+    //val x = operation.split("\\+")
+    //val x = Set(a, b)
+    //val operation = s"$a + $b"
+
+    val left = Real(a)
+    //val right = Real(b)
+    //val x = left + right
+    //println(s">>> ${left.digits.toSeq}")
+    //println(s">>> ${right.digits.toSeq}")
+    //println(s"(${a} + ${b}) = ${x} --> ${Real.dumps(x)} / ${x.digits.toSeq}")
+    println(s"${a} --> ${left} --> ${Real.dumps(left)} --> ${left.digits.toSeq} --> ${left.exponent}")
+  }
+  */
+
+  "Trivia" should "serialize 1" in {
+    val left = Real("1")
+    //assert(left.exponent == 1)
+    //assert(left.signum == false)
+    //assert(left.digits.deep == Array('1', '0').deep)
+    assert(left.toString() == "1.0")
+  }
+
+  it should "serialize 10000000.00000001" in {
+    val left = Real("10000000.00000001")
+    //assert(left.exponent == 1)
+    //assert(left.signum == false)
+    //assert(left.digits.deep == Array('1', '0').deep)
+    assert(left.toString() == "10000000.00000001")
+  }
+
+  
+
+  /*
+  it should "parse 2" in {
+    val left = Real("2")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('2', '0').deep)
+  }
+
+  it should s"parse ${Long.MaxValue}${Long.MaxValue}" in {
+    val left = Real(s"${Long.MaxValue}${Long.MaxValue}")
+    assert(left.exponent == s"${Long.MaxValue}${Long.MaxValue}".size)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('9', '2', '2', '3', '3', '7', '2', '0', '3', '6', '8', '5', '4', '7', '7', '5', '8', '0', '7', '9', '2', '2', '3', '3', '7', '2', '0', '3', '6', '8', '5', '4', '7', '7', '5', '8', '0', '7', '0').deep)
+  }
+
+  "Normalized" should "parse 1.0" in {
+    val left = Real("1.0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0').deep)
+  }
+
+  it should "parse 0.1" in {
+    val left = Real("0.1")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '1').deep)
+  }
+
+  it should "parse 0.01" in {
+    val left = Real("0.01")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0', '1').deep)
+  }
+
+  it should "parse 10" in {
+    val left = Real("10")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse 10.0" in {
+    val left = Real("10.0")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse 10.1" in {
+    val left = Real("10.1")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '1').deep)
+  }
+
+  it should "parse 10.01" in {
+    val left = Real("10.01")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '1').deep)
+  }
+
+  it should "parse 10000000.00000001" in {
+    val left = Real("10000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse 0" in {
+    val left = Real("0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  it should "parse -1.0" in {
+    val left = Real("-1.0")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0').deep)
+  }
+
+  it should "parse -0.1" in {
+    val left = Real("-0.1")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '1').deep)
+  }
+
+  it should "parse -0.01" in {
+    val left = Real("-0.01")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '0', '1').deep)
+  }
+
+  it should "parse -10" in {
+    val left = Real("-10")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse -10.0" in {
+    val left = Real("-10.0")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0').deep)
+  }
+
+  it should "parse -10.1" in {
+    val left = Real("-10.1")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '1').deep)
+  }
+
+  it should "parse -10.01" in {
+    val left = Real("-10.01")
+    assert(left.exponent == 2)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0', '1').deep)
+  }
+
+  it should "parse -10000000.00000001" in {
+    val left = Real("-10000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse -0" in {
+    val left = Real("-0")
+    assert(left.exponent == 1)
+    assert(left.signum == true)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  "Malformed parsing" should "parse 0.0" in {
+    val left = Real("0.0")
+    assert(left.exponent == 1)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0').deep)
+  }
+
+  it should "parse 01.10" in {
+    val left = Real("01.10")
+    assert(left.exponent == 2)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '1', '1', '0').deep)
+  }
+
+  it should "parse 00000000.00000001" in {
+    val left = Real("00000000.00000001")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1').deep)
+  }
+
+  it should "parse 10000000.00000000" in {
+    val left = Real("10000000.00000000")
+    assert(left.exponent == 8)
+    assert(left.signum == false)
+    assert(left.digits.deep == Array('1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0').deep)
+  }
+
+  val randomDecimalL = new java.math.BigDecimal(java.lang.Math.random()).divide(new java.math.BigDecimal(10000 + ".0"), java.math.BigDecimal.ROUND_UP).multiply(new java.math.BigDecimal("100000000000.0")).toBigInteger()
+  val randomDecimalR = new java.math.BigDecimal(java.lang.Math.random()).divide(new java.math.BigDecimal(10000 + ".0"), java.math.BigDecimal.ROUND_UP).multiply(new java.math.BigDecimal("100000000000.0")).toBigInteger()
+  
+  val randomDecimal = s"${randomDecimalL}.${randomDecimalR}"
+
+
+  "Random parsing" should s"parse ${randomDecimal}" in {
+    val left = Real(randomDecimal)
+    assert(left.exponent == randomDecimal.indexOf('.'))
+    assert(left.signum == false)
+    assert(left.digits.deep == randomDecimal.toCharArray.filterNot(_ == '.').deep)
+  }
+  */
+
 }
