@@ -16,12 +16,8 @@ class Math {
       return new Object[]{};
     }
 
-    if (ld[0] == 0 || rd[0] == 0) {
-      return new Object[]{};
-    }
-
     char[] swap = null;
-
+/*
     if (le > 0 && le >= ld.length - 1) {
       int zeroes = le - (ld.length - 1);
       swap = new char[ld.length + zeroes];
@@ -43,9 +39,9 @@ class Math {
       swap = null;
       //le = 0;
       //System.out.println("LE >>>>>> zeroes + value: " + zeroes + " / " + java.util.Arrays.toString(ld));
-    }
+    }*/
 
-    if (re > 0 && re >= rd.length - 1) {
+    /*if (re > 0 && re >= rd.length - 1) {
       int zeroes = re - (rd.length - 1);
       swap = new char[rd.length + zeroes];
       java.util.Arrays.fill(swap, '0');
@@ -62,7 +58,7 @@ class Math {
       rd = swap;
       swap = null;
       //re = 0;
-    }
+    }*/
 
     //System.out.println(">>>> ld(1) / " + java.util.Arrays.toString(ld) + " / " + le);
     //System.out.println(">>>> rd(1) / " + java.util.Arrays.toString(rd) + " / " + re);
@@ -103,18 +99,18 @@ class Math {
       swap = null;
     } 
 
-    //System.out.println(">>>> ld(3) / " + java.util.Arrays.toString(ld) + " / " + le);
-    //System.out.println(">>>> rd(3) / " + java.util.Arrays.toString(rd) + " / " + re);
-
     i = rd.length;
 
     try {
       while (i-- > 0) {
         int kf = (((int) ld[i] - 48) + ((int) rd[i] - 48));
-
+        //System.out.println("adding " + ld[i] + " with " + rd[i] + " ––> " + kf);
         if (kf >= 10) {
+          //System.out.println("carry to left at " + i);
           ld[i] = (char)((kf % 10) + 48);
+          //System.out.println("modulus done "+ ld[i] + " at " + i);
           ld[i - 1] += 1;
+          //System.out.println("left decrement");
         } else {
           ld[i] = (char)(kf + 48);
         }
@@ -122,7 +118,7 @@ class Math {
     } catch (ArrayIndexOutOfBoundsException e) {
       //System.out.println("overflow");
       swap = new char[ld.length + 1];
-      System.arraycopy(rd, 0, swap, 1, ld.length);
+      System.arraycopy(ld, 0, swap, 1, ld.length);
       swap[0] = '1';
       ld = swap;
       swap = null;
@@ -131,17 +127,6 @@ class Math {
 
     //System.out.println(">>>> ld(4) / " + java.util.Arrays.toString(ld));
     //System.out.println(">>>> re: " + re);
-
-    i = ld.length - 1;
-
-    while (ld[i] == '0') { i--; }
-
-    if (i != (ld.length - 1)) {
-      swap = new char[i + 1];
-      System.arraycopy(ld, 0, swap, 0, swap.length);
-      ld = swap;
-      swap = null;
-    }
 
     return new Object[]{ ls, re, ld };
   }
