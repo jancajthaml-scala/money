@@ -31,7 +31,6 @@ class Math {
   }
 
   public static Object[] __add(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
-
     if (ls ^ rs) {
       // TODO/FIXME should _minus
       //r
@@ -42,35 +41,36 @@ class Math {
 
     int exponentDiff = le - re;
 
+    // TODO/FIXME seems wrongly implemented
     if (exponentDiff > 0) {
+      System.out.println("positive diff " + exponentDiff);
       re = le;
-      swap = new char[rd.length + exponentDiff];
-      swap = fillZeroes(swap, 0, swap.length - rd.length); // FIXME
-      System.arraycopy(rd, 0, swap, swap.length - rd.length, rd.length);
+      //swap = new char[rd.length + exponentDiff];
+      int len = exponentDiff;//(rd.length + exponentDiff) - rd.length;
+      // TODO/FIXME prepend zeroes vs append ?
+      swap = fillZeroes(new char[rd.length + exponentDiff], 0, len);
+      System.arraycopy(rd, 0, swap, len, rd.length);
       rd = swap;
-      swap = null;
+      //swap = null;
     } else {
-      swap = new char[ld.length - exponentDiff];
-      swap = fillZeroes(swap, 0, swap.length - ld.length); // FIXME
-      System.arraycopy(ld, 0, swap, swap.length - ld.length, ld.length);
+      System.out.println("negative diff " + exponentDiff);
+      int len = -exponentDiff;
+      // TODO/FIXME prepend zeroes vs append ?
+      swap = fillZeroes(new char[ld.length - exponentDiff], 0, len);
+      System.arraycopy(ld, 0, swap, len, ld.length);
       ld = swap;
-      swap = null;
     }
 
     int i = ld.length - rd.length;
 
     if (i < 0) {
-      swap = new char[rd.length];
-      swap = fillZeroes(swap, ld.length, swap.length); // FIXME
+      swap = fillZeroes(new char[rd.length], rd.length - ld.length, rd.length);
       System.arraycopy(ld, 0, swap, 0, ld.length);
       ld = swap;
-      swap = null;
     } else if (i > 0) {
-      swap = new char[ld.length];
-      swap = fillZeroes(swap, rd.length, swap.length);  // FIXME
+      swap = fillZeroes(new char[ld.length], ld.length - rd.length, ld.length);
       System.arraycopy(rd, 0, swap, 0, rd.length);
       rd = swap;
-      swap = null;
     } 
 
     i = rd.length;
@@ -90,7 +90,7 @@ class Math {
       System.arraycopy(ld, 0, swap, 1, ld.length);
       swap[0] = '1';
       ld = swap;
-      swap = null;
+      //swap = null;
       re++;
     }
 
