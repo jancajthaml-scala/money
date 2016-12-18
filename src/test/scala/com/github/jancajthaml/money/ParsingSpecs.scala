@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ParsingSpecs extends FlatSpec with Matchers {
 
-  val run = true
+  val run = false
 
   if (run) "Trivia" should "parse 1" in {
     val left = Real("1")
