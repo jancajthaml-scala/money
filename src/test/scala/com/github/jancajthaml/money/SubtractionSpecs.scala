@@ -2,45 +2,47 @@ package com.github.jancajthaml.money
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class AdditionSpecs extends FlatSpec with Matchers {
+class SubtractionSpecs extends FlatSpec with Matchers {
 
   val run = true
 
-  if (run) "Trivia" should "add 1 + 1 = 2.0" in {
+  if (run) "Trivia" should "add 1 - 1" in {
     val left = Real("1")
     val right = Real("1")
-    val result = left + right
+    val result = left - right
     assert(result.exponent == 1)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('2', '0').deep)
+    assert(result.digits.deep == Array('0', '0').deep)
   }
 
-  if (run) it should "add 0 + 10001 = 10001.0" in {
+  if (run) it should "subtract 0 - 10001 = -10001.0" in {
     val left = Real("0")
     val right = Real("10001")
-    val result = left + right
+    val result = left - right
     assert(result.exponent == 5)
-    assert(result.signum == false)
+    assert(result.signum == true)
     assert(result.digits.deep == Array('1', '0', '0', '0', '1', '0').deep)
   }
 
-  if (run) it should "add 10001 + 0 = 10001.0" in {
+  if (run) it should "subtract 10001 - 0 = 10001.0" in {
     val left = Real("10001")
     val right = Real("0")
-    val result = left + right
+    val result = left - right
     assert(result.exponent == 5)
     assert(result.signum == false)
     assert(result.digits.deep == Array('1', '0', '0', '0', '1', '0').deep)
   }
 
-  if (run) it should "add -1 + -1 = -2.0" in {
+  if (run) it should "subtract -1 - -1 = 0.0" in {
     val left = Real("-1")
     val right = Real("-1")
-    val result = left + right
+    val result = left - right
     assert(result.exponent == 1)
-    assert(result.signum == true)
-    assert(result.digits.deep == Array('2', '0').deep)
+    assert(result.signum == false)
+    assert(result.digits.deep == Array('0', '0').deep)
   }
+
+  /*
 
   if (run) it should "add -0 + -10001 = -10001.0" in {
     val left = Real("-0")
@@ -130,4 +132,5 @@ class AdditionSpecs extends FlatSpec with Matchers {
       assert(result.digits.deep == resultDecimal.toCharArray.filterNot(_ == '.').deep)
     }
   }
+  */
 }

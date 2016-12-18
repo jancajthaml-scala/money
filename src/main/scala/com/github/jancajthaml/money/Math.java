@@ -30,32 +30,116 @@ class Math {
     return dest;
   }
 
+  public static Object[] __subtract(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
+    if (ls ^ rs) {
+      // TODO/FIXME should _minus
+      //r
+      return __add(ls, ld, le, !rs, rd, re);
+      //return new Object[]{};
+    }
+
+    char[] swap = null;
+
+    int exponentDiff = le - re;
+    int j = 0;
+    if (exponentDiff > 0) {
+      re = le;
+      //int len = exponentDiff;
+      j = exponentDiff;
+      swap = fillZeroes(new char[rd.length + exponentDiff], 0, j);
+      System.arraycopy(rd, 0, swap, j, rd.length);
+      rd = swap;
+    } else if (exponentDiff < 0) {
+      j = -exponentDiff;
+      swap = fillZeroes(new char[ld.length - exponentDiff], 0, j);
+      System.arraycopy(ld, 0, swap, j, ld.length);
+
+      //if (l) {
+      swap = ld;
+      ld = rd;
+      rd = swap;
+        //y.s = -y.s;
+      //}
+      ld = swap;
+    } else {
+      // Exponents equal. Check digit by digit.
+      boolean l = rd.length < ld.length;
+      int x = (l ? rd : ld).length;
+      int b = 0;
+
+      for (x = b = 0; b < x; b++) {
+        if (ld[b] != rd[b]) {
+          l = ld[b] < rd[b];
+          break;
+        }
+      }
+      if (l) {
+        swap = ld;
+        ld = rd;
+        rd = swap;
+        //y.s = -y.s;
+      }
+    }
+
+    int i = ld.length - rd.length;
+
+    if (i < 0) {
+      swap = fillZeroes(new char[rd.length], rd.length - ld.length, rd.length);
+      System.arraycopy(ld, 0, swap, 0, ld.length);
+      ld = swap;
+    } else if (i > 0) {
+      swap = fillZeroes(new char[ld.length], ld.length - rd.length, ld.length);
+      System.arraycopy(rd, 0, swap, 0, rd.length);
+      rd = swap;
+    }
+
+    int b = 0;
+    i = 0;
+
+    /*
+     * Append zeros to xc if shorter. No need to add zeros to yc if shorter
+     * as subtraction only needs to start at yc.length.
+     */
+    /*if ((b = (j = rd.length) - (i = ld.length)) > 0) {
+      for (; b--; ld[i++] = '0');
+    }*/
+
+    int m = rd.length;
+
+    // Subtract yc from xc.
+    for (b = ld.length; m > j;){
+      if (ld[--m] < rd[m]) {
+        for (i = m; i > 0 && ld[--j] == '0'; ld[j] = '9') {
+        }
+        --ld[j];
+        ld[m] += 10;
+      }
+      ld[m] -= rd[m];
+    }
+
+    return new Object[]{ ls, re, ld };
+  }
+
   public static Object[] __add(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
     if (ls ^ rs) {
       // TODO/FIXME should _minus
       //r
-      return new Object[]{};
+      return __subtract(ls, ld, le, !rs, rd, re);
+      //return new Object[]{};
     }
 
     char[] swap = null;
 
     int exponentDiff = le - re;
 
-    // TODO/FIXME seems wrongly implemented
     if (exponentDiff > 0) {
-      System.out.println("positive diff " + exponentDiff);
       re = le;
-      //swap = new char[rd.length + exponentDiff];
-      int len = exponentDiff;//(rd.length + exponentDiff) - rd.length;
-      // TODO/FIXME prepend zeroes vs append ?
+      int len = exponentDiff;
       swap = fillZeroes(new char[rd.length + exponentDiff], 0, len);
       System.arraycopy(rd, 0, swap, len, rd.length);
       rd = swap;
-      //swap = null;
-    } else {
-      System.out.println("negative diff " + exponentDiff);
+    } else if (exponentDiff < 0) {
       int len = -exponentDiff;
-      // TODO/FIXME prepend zeroes vs append ?
       swap = fillZeroes(new char[ld.length - exponentDiff], 0, len);
       System.arraycopy(ld, 0, swap, len, ld.length);
       ld = swap;
@@ -90,7 +174,6 @@ class Math {
       System.arraycopy(ld, 0, swap, 1, ld.length);
       swap[0] = '1';
       ld = swap;
-      //swap = null;
       re++;
     }
 

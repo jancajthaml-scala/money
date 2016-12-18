@@ -3,7 +3,7 @@ package com.github.jancajthaml.money
 import Real._
 //import Mapping._
 import Serialization.{fromString => _loads, toString => _dumps}
-import Math.{__add}
+import Math.{__add, __subtract}
 
 //import scala.collection.mutable.{ListBuffer => Buffer}
 //import sun.misc.Unsafe
@@ -31,6 +31,14 @@ object Real {
     l
   }
 
+  private def _sub(l: Real, r: Real) = {
+    val native = __subtract(l.signum, l.digits, l.exponent, r.signum, r.digits, r.exponent)
+    l.signum = native(0).asInstanceOf[Boolean]
+    l.exponent = native(1).asInstanceOf[Int]
+    l.digits = native(2).asInstanceOf[Array[Char]]
+    l.value = dumps(l)
+    l
+  }
   /*
   private def _sub(l: Real, r: Real) = {
     // Signs differ?
@@ -171,9 +179,11 @@ case class Real(var value: String) extends Cloneable with Comparable[Real] {
   def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
   def += (r: Real) = _add(this, r)
 
-  /*
   def -  (r: Real) = _sub(super.clone().asInstanceOf[Real], r)
   def -= (r: Real) = _sub(this, r)
+
+  /*
+  
   */
 
   /*
