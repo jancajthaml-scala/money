@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class SerializationSpecs extends FlatSpec with Matchers {
 
-  val run = false
+  val run = true
 
   if (run) "Trivia" should "serialize 1" in {
     val left = Real("1")

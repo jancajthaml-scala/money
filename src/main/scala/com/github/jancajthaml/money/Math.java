@@ -31,7 +31,9 @@ class Math {
   }
 
   public static Object[] __subtract(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
-    if (ls ^ rs) {
+    if (rs) {
+      return __add(!rs, rd, re, ls, ld, le);
+    } else if (ls ^ rs) {
       return __add(ls, ld, le, !rs, rd, re);
     }
 
@@ -40,7 +42,7 @@ class Math {
     int exponentDiff = le - re;
     int j = 0;
     if (exponentDiff > 0) {
-      //    //System.out.println(">>>> ld(3) / " + java.util.Arrays.toString(ld) + " / " + le);
+      //System.out.println(">>>> ld(3) / " + java.util.Arrays.toString(ld) + " / " + le);
 
       //System.out.println("case A");
 
@@ -164,6 +166,7 @@ class Math {
       //System.out.println(">>>> after-X / " + java.util.Arrays.toString(ld));
     }
 
+    //System.out.println(">>>> after-ld / " + java.util.Arrays.toString(ld));
     return new Object[]{ rs, re, ld };
   }
 

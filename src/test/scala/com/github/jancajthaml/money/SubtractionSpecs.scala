@@ -51,7 +51,7 @@ class SubtractionSpecs extends FlatSpec with Matchers {
     assert(result.digits.deep == Array('0','9','9','4','9','9').deep)
   }
 
-  /*
+  
   if (run) it should "subtract 0 - 10001 = -10001.0" in {
     val left = Real("0")
     val right = Real("10001")
@@ -77,7 +77,7 @@ class SubtractionSpecs extends FlatSpec with Matchers {
     assert(result.exponent == 1)
     assert(result.signum == false)
     assert(result.digits.deep == Array('0', '0').deep)
-  }*/
+  }
 
   /*
 
