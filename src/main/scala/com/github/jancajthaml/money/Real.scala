@@ -33,6 +33,7 @@ object Real {
           x.signum = true
           x.exponent = i - 1
           x.digits = swap
+          x.value = dumps(x)
           return ()
         }
         i += 1
@@ -43,6 +44,7 @@ object Real {
       x.signum = true
       x.exponent = swap.length - 1
       x.digits = swap
+      x.value = dumps(x)
       ()
     } else {
       var i = 0
@@ -78,14 +80,16 @@ object Real {
       System.arraycopy(x.digits, 0, buf, 1, x.exponent)
       System.arraycopy(x.digits, x.exponent - 1, buf, x.exponent + 1, x.digits.length - x.exponent + 1)
       buf(0) = '-'
+      buf(x.exponent + 1) = '.'
       buf
     } else {
       val buf = Array.ofDim[Char](x.digits.length + 1)
       System.arraycopy(x.digits, 0, buf, 0, x.exponent)
       System.arraycopy(x.digits, x.exponent - 1, buf, x.exponent, x.digits.length - x.exponent + 1)
+      buf(x.exponent) = '.'
       buf
     }
-    swap(x.exponent) = '.'
+    //swap(x.exponent) = '.'
     new String(swap, 0, swap.length)
   }
 
