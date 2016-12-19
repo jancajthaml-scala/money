@@ -10,73 +10,72 @@ class SubtractionSpecs extends FlatSpec with Matchers {
     val left = Real("3")
     val right = Real("2")
     val result = left - right
-    assert(result.exponent == 1)
+    assert(result.decimal == 1)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('1', '0').deep)
+    assert(result.value == "1.0")
   }
 
   if (run) it should "subtract 2 - 3 = -1.0" in {
     val left = Real("2")
     val right = Real("3")
     val result = left - right
-    assert(result.exponent == 1)
+    assert(result.decimal == 1)
     assert(result.signum == true)
-    assert(result.digits.deep == Array('1', '0').deep)
+    assert(result.value == "-1.0")
   }
 
   if (run) it should "subtract 100 - 1 = 99.0" in {
     val left = Real("100")
     val right = Real("1")
     val result = left - right
-    assert(result.exponent == 3)
+    assert(result.decimal == 3)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('0', '9', '9', '0').deep)
+    assert(result.value == "099.0")
   }
 
   if (run) it should "subtract 1 - 0.00001 = 0.99999" in {
     val left = Real("1")
     val right = Real("0.00001")
     val result = left - right
-    assert(result.exponent == 1)
+    assert(result.decimal == 1)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('0','9','9','9','9','9').deep)
+    assert(result.value == "0.99999")
   }
 
   if (run) it should "subtract 0.00501 - 1 = -0.99499" in {
     val left = Real("0.00501")
     val right = Real("1")
     val result = left - right
-    assert(result.exponent == 1)
+    assert(result.decimal == 1)
     assert(result.signum == true)
-    assert(result.digits.deep == Array('0','9','9','4','9','9').deep)
+    assert(result.value == "-0.99499")
   }
 
-  
   if (run) it should "subtract 0 - 10001 = -10001.0" in {
     val left = Real("0")
     val right = Real("10001")
     val result = left - right
-    assert(result.exponent == 5)
+    assert(result.decimal == 5)
     assert(result.signum == true)
-    assert(result.digits.deep == Array('1', '0', '0', '0', '1', '0').deep)
+    assert(result.value == "-10001.0")
   }
 
   if (run) it should "subtract 10001 - 0 = 10001.0" in {
     val left = Real("10001")
     val right = Real("0")
     val result = left - right
-    assert(result.exponent == 5)
+    assert(result.decimal == 5)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('1', '0', '0', '0', '1', '0').deep)
+    assert(result.value == "10001.0")
   }
 
   if (run) it should "subtract -1 - -1 = 0.0" in {
     val left = Real("-1")
     val right = Real("-1")
     val result = left - right
-    assert(result.exponent == 1)
+    assert(result.decimal == 1)
     assert(result.signum == false)
-    assert(result.digits.deep == Array('0', '0').deep)
+    assert(result.value == "0.0")
   }
 
   /*

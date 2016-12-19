@@ -2,7 +2,7 @@ package com.github.jancajthaml.money;
 
 class TypelessMath {
 
-  final static char[] ZEROES;
+  private final static char[] ZEROES;
 
   static {
     ZEROES = new char[1000];
@@ -30,12 +30,92 @@ class TypelessMath {
     return dest;
   }
 
-  public static Object[] minus(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
-    if (rs) {
-      return plus(!rs, rd, re, ls, ld, le);
-    } else if (ls ^ rs) {
-      return plus(ls, ld, le, !rs, rd, re);
+  private static String toString(boolean s, char[] d, int e) {
+    if (s) {
+      char[] swap = new char[d.length + 2];
+      System.arraycopy(d, 0, swap, 1, e);
+      System.arraycopy(d, e - 1, swap, e + 1, d.length - e + 1);
+      swap[0] = '-';
+      swap[e + 1] = '.';
+      return new String(swap, 0, swap.length);
+    } else {
+      char[] swap = new char[d.length + 1];
+      System.arraycopy(d, 0, swap, 0, e);
+      System.arraycopy(d, e - 1, swap, e, d.length - e + 1);
+      swap[e] = '.';
+      return new String(swap, 0, swap.length);
     }
+  }
+
+  public static Object[] plus(boolean ls, String ld_, int le, boolean rs, String rd_, int re) {
+    if (ls ^ rs) {
+      return minus(ls, ld_, le, !rs, rd_, re);
+    }
+
+    char[] ld = ld_.replaceAll("[^0-9]", "").toCharArray();
+    char[] rd = rd_.replaceAll("[^0-9]", "").toCharArray();
+
+    char[] swap = null;
+
+    int exponentDiff = le - re;
+
+    if (exponentDiff > 0) {
+      re = le;
+      int len = exponentDiff;
+      swap = fillZeroes(new char[rd.length + exponentDiff], 0, len);
+      System.arraycopy(rd, 0, swap, len, rd.length);
+      rd = swap;
+    } else if (exponentDiff < 0) {
+      int len = -exponentDiff;
+      swap = fillZeroes(new char[ld.length - exponentDiff], 0, len);
+      System.arraycopy(ld, 0, swap, len, ld.length);
+      ld = swap;
+    }
+
+    int i = ld.length - rd.length;
+
+    if (i < 0) {
+      swap = fillZeroes(new char[rd.length], 0, rd.length);
+      System.arraycopy(ld, 0, swap, 0, ld.length);
+      ld = swap;
+    } else if (i > 0) {
+      swap = fillZeroes(new char[ld.length], 0, ld.length);
+      System.arraycopy(rd, 0, swap, 0, rd.length);
+      rd = swap;
+    } 
+
+    i = rd.length;
+
+    try {
+      while (i-- > 0) {
+        int kf = (((int) ld[i] - 48) + ((int) rd[i] - 48));
+        if (kf >= 10) {
+          ld[i] = (char)((kf % 10) + 48);
+          ld[i - 1] += 1;
+        } else {
+          ld[i] = (char)(kf + 48);
+        }
+      }
+    } catch (ArrayIndexOutOfBoundsException e) {
+      swap = new char[ld.length + 1];
+      System.arraycopy(ld, 0, swap, 1, ld.length);
+      swap[0] = '1';
+      ld = swap;
+      re++;
+    }
+
+    return new Object[]{ ls, re, toString(ls, ld, re) };
+  }
+  
+  public static Object[] minus(boolean ls, String ld_, int le, boolean rs, String rd_, int re) {
+    if (rs) {
+      return plus(!rs, rd_, re, ls, ld_, le);
+    } else if (ls ^ rs) {
+      return plus(ls, ld_, le, !rs, rd_, re);
+    }
+
+    char[] ld = ld_.replaceAll("[^0-9]", "").toCharArray();
+    char[] rd = rd_.replaceAll("[^0-9]", "").toCharArray();
 
     char[] swap = null;
 
@@ -110,63 +190,7 @@ class TypelessMath {
       ld[m] = (char)(((int)(ld[m] - 48) - (int)(rd[m] - 48)) + 48);
     }
 
-    return new Object[]{ rs, re, ld };
+    return new Object[]{ rs, re, toString(rs, ld, re) };
   }
 
-  public static Object[] plus(boolean ls, char[] ld, int le, boolean rs, char[] rd, int re) {
-    if (ls ^ rs) {
-      return minus(ls, ld, le, !rs, rd, re);
-    }
-
-    char[] swap = null;
-
-    int exponentDiff = le - re;
-
-    if (exponentDiff > 0) {
-      re = le;
-      int len = exponentDiff;
-      swap = fillZeroes(new char[rd.length + exponentDiff], 0, len);
-      System.arraycopy(rd, 0, swap, len, rd.length);
-      rd = swap;
-    } else if (exponentDiff < 0) {
-      int len = -exponentDiff;
-      swap = fillZeroes(new char[ld.length - exponentDiff], 0, len);
-      System.arraycopy(ld, 0, swap, len, ld.length);
-      ld = swap;
-    }
-
-    int i = ld.length - rd.length;
-
-    if (i < 0) {
-      swap = fillZeroes(new char[rd.length], 0, rd.length);
-      System.arraycopy(ld, 0, swap, 0, ld.length);
-      ld = swap;
-    } else if (i > 0) {
-      swap = fillZeroes(new char[ld.length], 0, ld.length);
-      System.arraycopy(rd, 0, swap, 0, rd.length);
-      rd = swap;
-    } 
-
-    i = rd.length;
-
-    try {
-      while (i-- > 0) {
-        int kf = (((int) ld[i] - 48) + ((int) rd[i] - 48));
-        if (kf >= 10) {
-          ld[i] = (char)((kf % 10) + 48);
-          ld[i - 1] += 1;
-        } else {
-          ld[i] = (char)(kf + 48);
-        }
-      }
-    } catch (ArrayIndexOutOfBoundsException e) {
-      swap = new char[ld.length + 1];
-      System.arraycopy(ld, 0, swap, 1, ld.length);
-      swap[0] = '1';
-      ld = swap;
-      re++;
-    }
-
-    return new Object[]{ ls, re, ld };
-  }
 }
