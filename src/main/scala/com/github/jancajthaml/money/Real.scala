@@ -2,95 +2,89 @@ package com.github.jancajthaml.money
 
 import Real._
 
-import TypelessMath.{plus, minus}
-
 object Real {
 
-  private val trailingDecimal = ".0".intern
-
-  def normalize(x: Real) = {
-    val decimal = x.value.indexOf('.')
-
-    if (x.value.charAt(0) == '-') {
-      x.signum = true
-      if (decimal > -1) {
-        x.decimal = decimal - 1
-      } else {
-        x.decimal = x.value.length() - 1
-        x.value += trailingDecimal
-      }
-    } else {
-      x.signum = false
-      if (decimal > -1) {
-        x.decimal = decimal
-      } else {
-        x.decimal = x.value.length()
-        x.value += trailingDecimal
-      }
-    }
-  }
-
   private def assertUnderlying(x: Real) = {
-    if (x.dirty) {
-
-      x.dirty = false
+    if (x.underlying == null) {
+      x.underlying = new java.math.BigDecimal(x.repr)
     }
   }
 
   private def _add(l: Real, r: Real) = {
-    assertUnderlying(l)
-    assertUnderlying(r)
-    val native = plus(l.signum, l.value, l.decimal, r.signum, r.value, r.decimal)
-    l.signum = native(0).asInstanceOf[Boolean]
-    l.decimal = native(1).asInstanceOf[Int]
-    l.value = native(2).asInstanceOf[String]
+    l.underlying = l.underlying.add(r.underlying)
+    l.repr = l.underlying.toPlainString()
     l
   }
 
   private def _sub(l: Real, r: Real) = {
-    assertUnderlying(l)
-    assertUnderlying(r)
-    val native = minus(l.signum, l.value, l.decimal, r.signum, r.value, r.decimal)
-    l.signum = native(0).asInstanceOf[Boolean]
-    l.decimal = native(1).asInstanceOf[Int]
-    l.value = native(2).asInstanceOf[String]
+    l.underlying = l.underlying.subtract(r.underlying)
+    l.repr = l.underlying.toPlainString()
+    l
+  }
+
+  private def _mul(l: Real, r: Real) = {
+    l.underlying = l.underlying.multiply(r.underlying)
+    l.repr = l.underlying.toPlainString()
+    l
+  }
+
+  private def _div(l: Real, r: Real) = {
+    l.underlying = l.underlying.divide(r.underlying)
+    l.repr = l.underlying.toPlainString()
     l
   }
 }
 
-case class Real(var value: String) extends Cloneable with Comparable[Real] {
+case class Real(private var repr: String, private val currency: String) extends Cloneable with Comparable[Real] {
 
-  var signum = false
-  var decimal = -1
-  var dirty = true
-  var underlying = null
+  def value() = repr
 
-  normalize(this)
+  var underlying: java.math.BigDecimal = null
 
-  override def toString() = value
+  override def toString() = repr
 
-  override def compareTo(r: Real) = ???
+  override def compareTo(r: Real) = {
+    if (currency != r.currency) {
+      throw new UnsupportedOperationException(s"cannot compareTo ${this} with ${r}")
+    } else {
+      assertUnderlying(this)
+      assertUnderlying(r)
+      underlying.compareTo(r.underlying)
+    }
+  }
 
-  def +  (r: Real) = _add(super.clone().asInstanceOf[Real], r)
-  def += (r: Real) = _add(this, r)
+  private def check(r: Real) = {
+    assertUnderlying(this)
+    assertUnderlying(r)
+    if (currency != r.currency) {
+      throw new UnsupportedOperationException(s"${this} and ${r} are of different currencies")
+    } else r
+  }
 
-  def -  (r: Real) = _sub(super.clone().asInstanceOf[Real], r)
-  def -= (r: Real) = _sub(this, r)
+  val compare = (r: Real) => compareTo(r)
 
+  def <=(r: Real): Boolean = compare(r) <= 0
+  def <(r: Real): Boolean = compare(r) < 0
 
-  /*
-  def *  (r: Real) = _mul(super.clone().asInstanceOf[Real], r)
-  def *= (r: Real) = _mul(this, r)
-  */
+  def >=(r: Real): Boolean = compare(r) >= 0
+  def >(r: Real): Boolean = compare(r) > 0
 
-  /*
-  def /  (r: Real) = _div(super.clone().asInstanceOf[Real], r)
-  def /= (r: Real) = _div(this, r)
-  */
+  def += (r: Real) = { check(r); _add(this, r) }
+  def +  (r: Real) = super.clone().asInstanceOf[Real] += r
+
+  def -= (r: Real) = { check(r); _sub(this, r) }
+  def -  (r: Real) = super.clone().asInstanceOf[Real] -= r
+
+  def *= (r: Real) = { check(r); _mul(this, r) }
+  def *  (r: Real) = super.clone().asInstanceOf[Real] *= r
+
+  def /= (r: Real) = { check(r); _div(this, r) }
+  def /  (r: Real) = super.clone().asInstanceOf[Real] /= r
 
   def unary_- = {
+    assertUnderlying(this)
     val x = super.clone().asInstanceOf[Real]
-    x.signum = !x.signum
+    x.underlying = x.underlying.negate()
     x
   }
 }
