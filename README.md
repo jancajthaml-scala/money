@@ -23,5 +23,7 @@ In previous iterations there were several implementations made by me to implemen
 10000 passes
 
 Money - mean = 0.03 ms
+
 scala.math.BigDecimal - mean = 7.99 ms
+
 java.math.BigDecimal - mean = 7.95 ms
