@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class AdditionSpecs extends FlatSpec with Matchers {
 
-  val run = true
+  val run = false
 
   if (run) "Trivia" should "add 1 + 1 = 2.0" in {
     val left = Real("1")

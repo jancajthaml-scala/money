@@ -63,8 +63,12 @@ object ParsingPerformance extends Bench.OfflineReport {
 */
 
 /*
+
+*/
+
+
 object AdditionPerformance extends Bench.OfflineReport {
-  val times = Gen.range("times")(0, 100, 20)
+  val times = Gen.range("times")(0, 1000, 200)
 
   val ref1 = Real("1" + ("0" * 100) + "0.1")
   val ref2 = BigDecimal("1" + ("0" * 100) + "0.1")
@@ -74,12 +78,13 @@ object AdditionPerformance extends Bench.OfflineReport {
     measure method "add" in {
       using(times) config (
         exec.benchRuns -> 20,
-        exec.independentSamples -> 1,
-        exec.outliers.covMultiplier -> 1.5,
-        exec.outliers.suspectPercent -> 40
+        exec.independentSamples -> 1
       ) in { sz => { 
         val a = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+
+        val as = a.toString()
+        val bs = b.toString()
         (0 to 100).foreach { x => (a + b) }
       } }
     }
@@ -90,15 +95,57 @@ object AdditionPerformance extends Bench.OfflineReport {
     measure method "add" in {
       using(times) config (
         exec.benchRuns -> 20,
-        exec.independentSamples -> 1,
-        exec.outliers.covMultiplier -> 1.5,
-        exec.outliers.suspectPercent -> 40
+        exec.independentSamples -> 1
       ) in { sz => { 
         val a = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+
+        val as = a.underlying.toPlainString()
+        val bs = b.underlying.toPlainString()
         (0 to 100).foreach { x => (a + b) }
       } }
     }
   }
 } 
-*/
+
+object SubtractionPerformance extends Bench.OfflineReport {
+  val times = Gen.range("times")(0, 1000, 200)
+
+  val ref1 = Real("1" + ("0" * 100) + "0.1")
+  val ref2 = BigDecimal("1" + ("0" * 100) + "0.1")
+
+  performance of "Real" in {
+
+    measure method "add" in {
+      using(times) config (
+        exec.benchRuns -> 20,
+        exec.independentSamples -> 1
+      ) in { sz => { 
+        val a = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+        val b = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+
+        val as = a.toString()
+        val bs = b.toString()
+        (0 to 100).foreach { x => (a - b) }
+      } }
+    }
+  }
+
+  performance of "BigDecimal" in {
+
+    measure method "add" in {
+      using(times) config (
+        exec.benchRuns -> 20,
+        exec.independentSamples -> 1
+      ) in { sz => { 
+        val a = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+        val b = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
+
+        val as = a.underlying.toPlainString()
+        val bs = b.underlying.toPlainString()
+
+        (0 to 100).foreach { x => (a - b).underlying.toPlainString() }
+      } }
+    }
+  }
+} 

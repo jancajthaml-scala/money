@@ -4,7 +4,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class SubtractionSpecs extends FlatSpec with Matchers {
 
-  val run = true
+  val run = false
 
   if (run) "Trivia" should "subtract 3 - 2 = 1.0" in {
     val left = Real("3")
