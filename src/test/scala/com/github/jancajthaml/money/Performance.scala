@@ -76,10 +76,7 @@ object AdditionPerformance extends Bench.OfflineReport {
   performance of "Real" in {
 
     measure method "add" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1
-      ) in { sz => { 
+      using(times) in { sz => { 
         val a = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
 
@@ -93,10 +90,7 @@ object AdditionPerformance extends Bench.OfflineReport {
   performance of "BigDecimal" in {
 
     measure method "add" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1
-      ) in { sz => { 
+      using(times) in { sz => { 
         val a = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
 
@@ -116,11 +110,8 @@ object SubtractionPerformance extends Bench.OfflineReport {
 
   performance of "Real" in {
 
-    measure method "add" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1
-      ) in { sz => { 
+    measure method "subtract" in {
+      using(times) in { sz => { 
         val a = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = Real("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
 
@@ -133,11 +124,8 @@ object SubtractionPerformance extends Bench.OfflineReport {
 
   performance of "BigDecimal" in {
 
-    measure method "add" in {
-      using(times) config (
-        exec.benchRuns -> 20,
-        exec.independentSamples -> 1
-      ) in { sz => { 
+    measure method "subtract" in {
+      using(times) in { sz => { 
         val a = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
         val b = BigDecimal("1" + ("0" * sz ) + "1." + ("0" * (sz * 2)) + "1" + ("0" * sz))
 
