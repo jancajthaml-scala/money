@@ -3,10 +3,12 @@ package com.github.jancajthaml.money;
 class TypelessMath {
 
   private final static char[] ZEROES;
+  private final static String ZEROES_STRING;
 
   static {
     ZEROES = new char[1000];
     java.util.Arrays.fill(ZEROES, '0');
+    ZEROES_STRING = new String(ZEROES);
   }
   
   private static char[] fillZeroes(char[] dest, int from, int to) {
@@ -29,6 +31,30 @@ class TypelessMath {
     }
     return dest;
   }
+
+  private static String prependZeroesString(String dest, int length) {
+    System.out.println("prepending " + length + " zeroes to " + dest);
+    //int offset = from;
+    //int len = to - from;
+    int tl = ZEROES_STRING.length();
+    int remain = length;
+
+    if (tl < length) {
+      while (remain > 0) {
+        dest = ZEROES_STRING.substring(0, tl) + dest;
+        remain -= tl;
+      }
+    } else {
+      while (remain > 0) {
+        dest = ZEROES_STRING.substring(0, tl) + dest;
+        //offset += remain;
+        remain -= length;
+      }
+    }
+    return dest;
+  }
+
+
 
   private static String toString(boolean s, char[] d, int e) {
     if (s) {
@@ -60,16 +86,24 @@ class TypelessMath {
     int exponentDiff = le - re;
 
     if (exponentDiff > 0) {
+      System.out.println("case A");
+      System.out.println("before [case A] ld: " + ld_ + " ( " + java.util.Arrays.toString(ld) + " ) rd: " + rd_ + " ( " + java.util.Arrays.toString(rd) + " )");
       re = le;
       int len = exponentDiff;
+      rd_ = prependZeroesString(ld_, len);
       swap = fillZeroes(new char[rd.length + exponentDiff], 0, len);
       System.arraycopy(rd, 0, swap, len, rd.length);
       rd = swap;
+      System.out.println("after [case A] ld: " + ld_ + " ( " + java.util.Arrays.toString(ld) + " ) rd: " + rd_ + " ( " + java.util.Arrays.toString(rd) + " )");
     } else if (exponentDiff < 0) {
+      System.out.println("case B");
+      System.out.println("before [case B] ld: " + ld_ + " ( " + java.util.Arrays.toString(ld) + " ) rd: " + rd_ + " ( " + java.util.Arrays.toString(rd) + " )");
       int len = -exponentDiff;
+      ld_ = prependZeroesString(ld_, len);
       swap = fillZeroes(new char[ld.length - exponentDiff], 0, len);
       System.arraycopy(ld, 0, swap, len, ld.length);
       ld = swap;
+      System.out.println("after [case B] ld: " + ld_ + " ( " + java.util.Arrays.toString(ld) + " ) rd: " + rd_ + " ( " + java.util.Arrays.toString(rd) + " )");
     }
 
     int i = ld.length - rd.length;

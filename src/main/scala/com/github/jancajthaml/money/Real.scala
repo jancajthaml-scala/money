@@ -30,7 +30,16 @@ object Real {
     }
   }
 
+  private def assertUnderlying(x: Real) = {
+    if (x.dirty) {
+
+      x.dirty = false
+    }
+  }
+
   private def _add(l: Real, r: Real) = {
+    assertUnderlying(l)
+    assertUnderlying(r)
     val native = plus(l.signum, l.value, l.decimal, r.signum, r.value, r.decimal)
     l.signum = native(0).asInstanceOf[Boolean]
     l.decimal = native(1).asInstanceOf[Int]
@@ -39,6 +48,8 @@ object Real {
   }
 
   private def _sub(l: Real, r: Real) = {
+    assertUnderlying(l)
+    assertUnderlying(r)
     val native = minus(l.signum, l.value, l.decimal, r.signum, r.value, r.decimal)
     l.signum = native(0).asInstanceOf[Boolean]
     l.decimal = native(1).asInstanceOf[Int]
@@ -51,6 +62,8 @@ case class Real(var value: String) extends Cloneable with Comparable[Real] {
 
   var signum = false
   var decimal = -1
+  var dirty = true
+  var underlying = null
 
   normalize(this)
 

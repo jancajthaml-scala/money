@@ -1,7 +1,7 @@
 package com.github.jancajthaml.money
 
 import org.scalameter.api.{Measurer, Bench, Gen, exec}
-
+/*
 object ParsingPerformance extends Bench.OfflineReport {
   val times = Gen.range("times")(0, 10000, 500)
 
@@ -21,3 +21,4 @@ object ParsingPerformance extends Bench.OfflineReport {
     }
   }
 }
+*/

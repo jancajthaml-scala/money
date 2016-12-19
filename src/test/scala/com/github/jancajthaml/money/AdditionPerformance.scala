@@ -1,6 +1,7 @@
 package com.github.jancajthaml.money
 
 import org.scalameter.api.{Measurer, Bench, Gen, exec}
+
 /*
 object AdditionPerformance extends Bench.OfflineReport {
   val times = Gen.range("times")(0, 1000, 200)
@@ -35,5 +36,5 @@ object AdditionPerformance extends Bench.OfflineReport {
       } }
     }
   }
-} 
+}
 */
