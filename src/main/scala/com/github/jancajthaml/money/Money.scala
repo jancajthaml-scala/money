@@ -1,7 +1,5 @@
 package com.github.jancajthaml.money
 
-//import com.github.jancajthaml.number.RealNumber
-
 import Money._
 
 object Money {

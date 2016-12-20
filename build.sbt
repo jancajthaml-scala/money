@@ -19,8 +19,6 @@ scalacOptions in Global ++= Seq(
   "-language:postfixOps"
 )
 
-lazy val number = RootProject(uri("git://github.com/jancajthaml/number.git#8bfa8e4151e9d0344871e94148a4ffd835fb7ad5"))
-
 lazy val test = Project(
   "test",
   file("."),
@@ -40,5 +38,4 @@ lazy val test = Project(
     parallelExecution in Test := false,
     logBuffered := false
   )
-).dependsOn(number)
-
+)
