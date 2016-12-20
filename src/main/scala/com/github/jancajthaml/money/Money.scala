@@ -37,7 +37,7 @@ object Money {
 
 case class Money(private var repr: String, private val currency: String) extends Cloneable with Comparable[Money] {
 
-  var dirty = false
+  private var dirty = false
 
   def value() = {
     if (dirty) {
@@ -48,7 +48,7 @@ case class Money(private var repr: String, private val currency: String) extends
     repr
   }
 
-  var underlying: java.math.BigDecimal = null
+  private var underlying: java.math.BigDecimal = null
 
   override def toString() = repr
 
