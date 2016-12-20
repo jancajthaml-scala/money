@@ -7,8 +7,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   val run = true
 
   if (run) "Trivia" should "subtract 3 - 2 = 1.0" in {
-    val left = Real("3", "EUR")
-    val right = Real("2", "EUR")
+    val left = Money("3", "EUR")
+    val right = Money("2", "EUR")
     val result = left - right
     //assert(result.decimal == 1)
     //assert(result.signum == false)
@@ -16,8 +16,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 2 - 3 = -1.0" in {
-    val left = Real("2", "EUR")
-    val right = Real("3", "EUR")
+    val left = Money("2", "EUR")
+    val right = Money("3", "EUR")
     val result = left - right
     //assert(result.decimal == 1)
     //assert(result.signum == true)
@@ -25,8 +25,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 100 - 1 = 99.0" in {
-    val left = Real("100", "EUR")
-    val right = Real("1", "EUR")
+    val left = Money("100", "EUR")
+    val right = Money("1", "EUR")
     val result = left - right
     //assert(result.decimal == 3)
     //assert(result.signum == false)
@@ -34,8 +34,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 1 - 0.00001 = 0.99999" in {
-    val left = Real("1", "EUR")
-    val right = Real("0.00001", "EUR")
+    val left = Money("1", "EUR")
+    val right = Money("0.00001", "EUR")
     val result = left - right
     //assert(result.decimal == 1)
     //assert(result.signum == false)
@@ -43,8 +43,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 0.00501 - 1 = -0.99499" in {
-    val left = Real("0.00501", "EUR")
-    val right = Real("1", "EUR")
+    val left = Money("0.00501", "EUR")
+    val right = Money("1", "EUR")
     val result = left - right
     //assert(result.decimal == 1)
     //assert(result.signum == true)
@@ -52,8 +52,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 0 - 10001 = -10001.0" in {
-    val left = Real("0", "EUR")
-    val right = Real("10001", "EUR")
+    val left = Money("0", "EUR")
+    val right = Money("10001", "EUR")
     val result = left - right
     //assert(result.decimal == 5)
     //assert(result.signum == true)
@@ -61,8 +61,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract 10001 - 0 = 10001.0" in {
-    val left = Real("10001", "EUR")
-    val right = Real("0", "EUR")
+    val left = Money("10001", "EUR")
+    val right = Money("0", "EUR")
     val result = left - right
     //assert(result.decimal == 5)
     //assert(result.signum == false)
@@ -70,8 +70,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "subtract -1 - -1 = 0.0" in {
-    val left = Real("-1", "EUR")
-    val right = Real("-1", "EUR")
+    val left = Money("-1", "EUR")
+    val right = Money("-1", "EUR")
     val result = left - right
     //assert(result.decimal == 1)
     //assert(result.signum == false)
@@ -81,8 +81,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   /*
 
   if (run) it should "add -0 + -10001 = -10001.0" in {
-    val left = Real("-0")
-    val right = Real("-10001")
+    val left = Money("-0")
+    val right = Money("-10001")
     val result = left + right
     assert(result.exponent == 5)
     //assert(result.signum == true)
@@ -90,8 +90,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "add 1 + 9 = 10.0" in {
-    val left = Real("1")
-    val right = Real("9")
+    val left = Money("1")
+    val right = Money("9")
     val result = left + right
     assert(result.exponent == 2)
     //assert(result.signum == false)
@@ -99,8 +99,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "add 9 + 9 = 18.0" in {
-    val left = Real("9")
-    val right = Real("9")
+    val left = Money("9")
+    val right = Money("9")
     val result = left + right
     assert(result.exponent == 2)
     //assert(result.signum == false)
@@ -108,8 +108,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) "Normalized" should "add 1.0 + 0.1 = 1.1" in {
-    val left = Real("1.0")
-    val right = Real("0.1")
+    val left = Money("1.0")
+    val right = Money("0.1")
     val result = left + right
     assert(result.exponent == 1)
     //assert(result.signum == false)
@@ -117,8 +117,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) "Normalized" should "add 0.001 + 1000.0 = 1000.001" in {
-    val left = Real("0.001")
-    val right = Real("1000.0")
+    val left = Money("0.001")
+    val right = Money("1000.0")
     val result = left + right
     assert(result.exponent == 4)
     //assert(result.signum == false)
@@ -126,8 +126,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "add 1000.0 + 0.001 = 1000.001" in {
-    val left = Real("1000.0")
-    val right = Real("0.001")
+    val left = Money("1000.0")
+    val right = Money("0.001")
     val result = left + right
     assert(result.exponent == 4)
     //assert(result.signum == false)
@@ -135,8 +135,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "add 1.01 + 1.00001 = 11.010012" in {
-    val left =  Real("1.010002")
-    val right = Real("10.00001")
+    val left =  Money("1.010002")
+    val right = Money("10.00001")
     val result = left + right
     assert(result.exponent == 2)
     //assert(result.signum == false)
@@ -144,8 +144,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
   }
 
   if (run) it should "add 0.0000091 + 0.9999909 = 1.0000000" in {
-    val left =  Real("0.0000091")
-    val right = Real("0.9999909")
+    val left =  Money("0.0000091")
+    val right = Money("0.9999909")
     val result = left + right
     assert(result.exponent == 1)
     //assert(result.signum == false)
@@ -159,8 +159,8 @@ class SubtractionSpecs extends FlatSpec with Matchers {
     val resultDecimal = new java.math.BigDecimal(randomDecimal).add(new java.math.BigDecimal(randomDecimal)).toPlainString()
 
     "Random" should s"add ${randomDecimal} + ${randomDecimal} = ${resultDecimal}" in {
-      val left = Real(randomDecimal)
-      val right = Real(randomDecimal)
+      val left = Money(randomDecimal)
+      val right = Money(randomDecimal)
       val result = left + right
 
       assert(result.exponent == resultDecimal.indexOf('.'))
