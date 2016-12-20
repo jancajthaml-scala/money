@@ -20,7 +20,7 @@ object SubtractionPerformance extends Bench.OfflineReport {
 
         val as = a.toString()
         val bs = b.toString()
-        (0 to 100).foreach { x => (a - b) }
+        (0 to sz).foreach { x => (a - b) }
       } }
     }
     measure method "scala.math.BigDecimal.subtract" in {
@@ -35,7 +35,7 @@ object SubtractionPerformance extends Bench.OfflineReport {
 
         val as = a.underlying.toPlainString()
         val bs = b.underlying.toPlainString()
-        (0 to 100).foreach { x => (a - b).underlying.toPlainString() }
+        (0 to sz).foreach { x => (a - b).underlying.toPlainString() }
       } }
     }
     measure method "java.math.BigDecimal.subtract" in {
@@ -50,7 +50,7 @@ object SubtractionPerformance extends Bench.OfflineReport {
 
         val as = a.toPlainString()
         val bs = b.toPlainString()
-        (0 to 100).foreach { x => (a.subtract(b)).toPlainString() }
+        (0 to sz).foreach { x => (a.subtract(b)).toPlainString() }
       } }
     }
   }
