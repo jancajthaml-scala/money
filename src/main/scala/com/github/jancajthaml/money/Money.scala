@@ -35,7 +35,7 @@ object Money {
   }
 }
 
-case class Money(private var repr: String, private val currency: String) extends Cloneable with Comparable[Money] {
+case class Money(private var repr: String, val currency: String) extends Cloneable with Comparable[Money] {
 
   private var dirty = false
 
