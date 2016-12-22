@@ -2,33 +2,35 @@ package com.github.jancajthaml.money
 
 import Money._
 
+import java.math.{BigDecimal => BigDec, MathContext}
+
 object Money {
 
   private def assertUnderlying(x: Money) = {
     if (x.underlying == null) {
-      x.underlying = new java.math.BigDecimal(x.repr, java.math.MathContext.DECIMAL128)
+      x.underlying = new BigDec(x.repr, MathContext.DECIMAL128)
     }
   }
 
-  private def _add(l: Money, r: Money) = {
+  private def add(l: Money, r: Money) = {
     l.dirty = true
     l.underlying = l.underlying.add(r.underlying)
     l
   }
 
-  private def _sub(l: Money, r: Money) = {
+  private def sub(l: Money, r: Money) = {
     l.dirty = true
     l.underlying = l.underlying.subtract(r.underlying)
     l
   }
 
-  private def _mul(l: Money, r: Money) = {
+  private def mul(l: Money, r: Money) = {
     l.dirty = true
     l.underlying = l.underlying.multiply(r.underlying)
     l
   }
 
-  private def _div(l: Money, r: Money) = {
+  private def div(l: Money, r: Money) = {
     l.dirty = true
     l.underlying = l.underlying.divide(r.underlying)
     l
@@ -39,6 +41,8 @@ case class Money(private var repr: String, val currency: String) extends Cloneab
 
   private var dirty = false
 
+  private var underlying: BigDec = null
+
   def value() = {
     if (dirty) {
       underlying = underlying.stripTrailingZeros()
@@ -48,9 +52,7 @@ case class Money(private var repr: String, val currency: String) extends Cloneab
     repr
   }
 
-  private var underlying: java.math.BigDecimal = null
-
-  override def toString() = repr
+  override def toString() = value
 
   override def compareTo(r: Money) = {
     if (currency != r.currency) {
@@ -60,6 +62,11 @@ case class Money(private var repr: String, val currency: String) extends Cloneab
       assertUnderlying(r)
       underlying.compareTo(r.underlying)
     }
+  }
+
+  def compareTo(r: BigDecimal) = {
+    assertUnderlying(this)
+    underlying.compareTo(r.underlying)
   }
 
   private def check(r: Money) = {
@@ -72,22 +79,22 @@ case class Money(private var repr: String, val currency: String) extends Cloneab
 
   val compare = (r: Money) => compareTo(r)
 
-  def <=(r: Money): Boolean = compare(r) <= 0
-  def <(r: Money): Boolean = compare(r) < 0
+  def <=(r: Money) = compare(r) <= 0
+  def <(r: Money) = compare(r) < 0
 
-  def >=(r: Money): Boolean = compare(r) >= 0
-  def >(r: Money): Boolean = compare(r) > 0
+  def >=(r: Money) = compare(r) >= 0
+  def >(r: Money) = compare(r) > 0
 
-  def +=(r: Money) = { check(r); _add(this, r) }
+  def +=(r: Money) = { check(r); add(this, r) }
   def +(r: Money) = super.clone().asInstanceOf[Money] += r
 
-  def -=(r: Money) = { check(r); _sub(this, r) }
+  def -=(r: Money) = { check(r); sub(this, r) }
   def -(r: Money) = super.clone().asInstanceOf[Money] -= r
 
-  def *=(r: Money) = { check(r); _mul(this, r) }
+  def *=(r: Money) = { check(r); mul(this, r) }
   def *(r: Money) = super.clone().asInstanceOf[Money] *= r
 
-  def /=(r: Money) = { check(r); _div(this, r) }
+  def /=(r: Money) = { check(r); div(this, r) }
   def /(r: Money) = super.clone().asInstanceOf[Money] /= r
 
   def unary_- = {
