@@ -4,21 +4,26 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ParsingSpecs extends FlatSpec with Matchers {
 
-  val run = false
+  val run = true
 
   if (run) "Trivia" should "parse 1" in {
     val left = Money("1", "EUR")
-    assert(left.value == "1.0")
+    assert(left.value == "1")
   }
 
   if (run) it should "parse 2" in {
     val left = Money("2", "EUR")
-    assert(left.value == "2.0")
+    assert(left.value == "2")
+  }
+
+  if (run) it should "parse -1" in {
+    val left = Money("1", "EUR")
+    assert((-left).value == "-1")
   }
 
   if (run) it should s"parse ${Long.MaxValue}${Long.MaxValue}" in {
     val left = Money(s"${Long.MaxValue}${Long.MaxValue}", "EUR")
-    assert(left.value == s"${Long.MaxValue}${Long.MaxValue}.0")
+    assert(left.value == s"${Long.MaxValue}${Long.MaxValue}")
   }
 
   if (run) "Normalized" should "parse 1.0" in {
@@ -38,7 +43,7 @@ class ParsingSpecs extends FlatSpec with Matchers {
 
   if (run) it should "parse 10" in {
     val left = Money("10", "EUR")
-    assert(left.value == "10.0")
+    assert(left.value == "10")
   }
 
   if (run) it should "parse 10.0" in {
@@ -63,7 +68,7 @@ class ParsingSpecs extends FlatSpec with Matchers {
 
   if (run) it should "parse 0" in {
     val left = Money("0", "EUR")
-    assert(left.value == "0.0")
+    assert(left.value == "0")
   }
 
   if (run) it should "parse -1.0" in {
@@ -83,7 +88,7 @@ class ParsingSpecs extends FlatSpec with Matchers {
 
   if (run) it should "parse -10" in {
     val left = Money("-10", "EUR")
-    assert(left.value == "-10.0")
+    assert(left.value == "-10")
   }
 
   if (run) it should "parse -10.0" in {
