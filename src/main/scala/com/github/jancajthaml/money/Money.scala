@@ -113,7 +113,9 @@ case class Money(private var repr: String, val currency: String) extends Compara
   def unary_- = {
     val x = Money(value(), currency)
     assertUnderlying(x)
-    x.underlying = x.underlying.negate()
+    x.underlying = x.underlying.negate().stripTrailingZeros()
+    x.repr = underlying.toPlainString()
+    x.dirty = false
     x
   }
 }
