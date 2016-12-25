@@ -37,7 +37,7 @@ object Money {
   }
 }
 
-case class Money(private var repr: String, val currency: String) extends Cloneable with Comparable[Money] {
+case class Money(private var repr: String, val currency: String) extends Comparable[Money] {
 
   private var dirty = false
 
@@ -85,21 +85,34 @@ case class Money(private var repr: String, val currency: String) extends Cloneab
   def >=(r: Money) = compare(r) >= 0
   def >(r: Money) = compare(r) > 0
 
-  def +=(r: Money) = { check(r); add(this, r) }
-  def +(r: Money) = super.clone().asInstanceOf[Money] += r
-
-  def -=(r: Money) = { check(r); sub(this, r) }
-  def -(r: Money) = super.clone().asInstanceOf[Money] -= r
-
-  def *=(r: Money) = { check(r); mul(this, r) }
-  def *(r: Money) = super.clone().asInstanceOf[Money] *= r
-
-  def /=(r: Money) = { check(r); div(this, r) }
-  def /(r: Money) = super.clone().asInstanceOf[Money] /= r
+  def +(r: Money) = {
+    val l = Money(value(), currency)
+    check(l)
+    check(r)
+    add(l, r)
+  }
+  def -(r: Money) = {
+    val l = Money(value(), currency)
+    check(l)
+    check(r)
+    sub(l, r)
+  }
+  def *(r: Money) = {
+    val l = Money(value(), currency)
+    check(l)
+    check(r)
+    mul(l, r)
+  }
+  def /(r: Money) = {
+    val l = Money(value(), currency)
+    check(l)
+    check(r)
+    div(l, r)
+  }
 
   def unary_- = {
-    assertUnderlying(this)
-    val x = super.clone().asInstanceOf[Money]
+    val x = Money(value(), currency)
+    assertUnderlying(x)
     x.underlying = x.underlying.negate()
     x
   }
